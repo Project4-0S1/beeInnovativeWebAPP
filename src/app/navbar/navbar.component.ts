@@ -19,10 +19,16 @@ export class NavbarComponent {
 
   constructor(private router: Router, public auth: AuthService) {}
 
+  isMobileMenuOpen = false;
+
   pages = [
     {path: '/', name: 'Home'},
     {path: '/Kaart', name: 'Kaart'},
   ];
+
+  toggleMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
 
   logout() {
     this.auth.logout({ logoutParams: { returnTo: window.location.origin } });
