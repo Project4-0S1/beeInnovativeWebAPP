@@ -36,6 +36,8 @@ export class MapComponent implements OnInit {
     type: 'FeatureCollection',
     features: []
   };
+
+  constructor() {}
   
   ngOnInit(): void {
 
@@ -98,20 +100,44 @@ export class MapComponent implements OnInit {
     // Add a layer to display the points
     this.map.addLayer({
       id: 'location-points',
-      type: 'circle', // You can use 'symbol' for custom icons
+      type: 'symbol',
       source: 'BeehiveLocations',
+      layout: {
+        'icon-image': 'mapbox-square', // Use a predefined Mapbox icon (or custom icon)
+        'text-field': ['get', 'title'], // Show the location name as text
+        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+        'text-size': 12,
+        'text-offset': [0, -5],
+        'icon-size': 1.5,
+        'icon-offset':  [0, -20],
+      },
       paint: {
-        'circle-radius': 8,
-        'circle-color': '#161DE9', 
+        'text-color': '#161DE9',  // Set text color
+        'text-halo-color': '#ffffff', // Optional halo around the text
+        'text-halo-width': 2, // Optional halo width for better visibility
       }
     });
 
     this.map.addLayer({
       id: 'hornet-points',
-      type: 'circle', // You can use 'symbol' for custom icons
+      type: 'circle',
       source: 'HornetLocations',
       paint: {
-        'circle-radius': 40,
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8, 1.5,
+          9, 3.125,
+          10, 6.25,
+          11, 12.5,
+          12, 25,
+          13, 50,
+          14, 100,
+          15, 200,
+          16, 400,
+          17, 800
+        ],
         'circle-color': '#da2828', 
         'circle-opacity': 0.6 
       }
