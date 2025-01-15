@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { NavbarComponent } from './navbar/navbar.component';
 import { FooterComponent } from './footer/footer.component';
 import { AuthService } from '@auth0/auth0-angular';
-import { AuthButtonComponent } from './auth-button.component';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +13,6 @@ import { AuthButtonComponent } from './auth-button.component';
     CommonModule,
     NavbarComponent,
     FooterComponent,
-    AuthButtonComponent,
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
