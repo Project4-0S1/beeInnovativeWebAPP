@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { MapComponent } from './map/map.component';
-import { AuthGuard } from './auth.guard';
+import { AdminComponent } from './admin/admin.component';
 
 export const routes: Routes = [
-    { path: 'kaart', component: MapComponent, canActivate: [AuthGuard] },
-  // Add other routes here
+    { path: 'kaart', component: MapComponent },
+    { path: 'admin', component: AdminComponent },
 ];
