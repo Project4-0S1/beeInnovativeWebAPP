@@ -15,7 +15,7 @@ export class NavbarComponent {
 
   pages = [
     {path: '/', name: 'Home'},
-    {path: '/Kaart', name: 'Kaart'},
+    {path: '/kaart', name: 'Test'},
     {path: '/Admin', name: 'Admin'},
   ];
 }
