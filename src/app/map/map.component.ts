@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-map',
@@ -67,7 +68,7 @@ export class MapComponent implements OnInit {
     });
 
     this.map = new mapboxgl.Map({
-      accessToken: "pk.eyJ1Ijoiam9ycml0LWdldXJ0cyIsImEiOiJjbTV3YjQybngwN2xxMmxzYXJ4bXI2dDRmIn0.2H-0nL81JkwycB_b9En0Bw",
+      accessToken: environment.mapbox.accessToken,
       container: 'map',
       style: this.style,
       zoom: 13,
