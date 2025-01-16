@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Beehive } from '../beehive';
+import { Beehive } from '../interfaces/beehive';
 import { ApiService } from '../api.service';
 
 @Component({

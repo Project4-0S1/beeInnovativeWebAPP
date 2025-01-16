@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
-
+import { environment } from '../../environments/environmnent';
+import { Beehive } from '../interfaces/beehive';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Beehive } from './interfaces/beehive';
-import { environment } from '../environments/environmnent';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ApiService {
+export class BeehiveService {
 
-  private ApiUrl= `${environment.api_url}beehives`
+  private ApiUrl = `${environment.api_url}beehives`
 
-  constructor(private httpClient: HttpClient) {
-  }
+  private beehives: Beehive[] = [];
 
-  getArticles(): Observable<Beehive[]> {
+  constructor(private httpClient: HttpClient) { }
+
+  getBeehives(): Observable<Beehive[]> {
     return this.httpClient.get<Beehive[]>(this.ApiUrl);
   }
 

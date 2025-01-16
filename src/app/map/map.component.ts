@@ -2,11 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from '../../environments/environmnent';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
+import { Beehive } from '../interfaces/beehive';
+import { Observable } from 'rxjs';
+import { BeehiveService } from '../services/beehive.service';
+import { CommonModule } from '@angular/common';
+import { Nestlocations } from '../interfaces/nestlocations';
+import { NestlocationService } from '../services/nestlocation.service';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './map.component.html',
   styleUrl: './map.component.css'
 })
@@ -17,10 +23,16 @@ export class MapComponent implements OnInit {
   lat: number = 51.16190723486903;
   lng: number = 4.961886810019829;
 
-  beehiveLocations = [
-    {lat: 51.164120751116435, lon: 4.961838518509023, name: "De C"},
-    {lat: 51.14956154963047, lon: 4.964806904144326, name: "Pizza Hut"}
-  ];
+  //Beehives
+  beehives$: Observable<Beehive[]> = new Observable<Beehive[]>();
+  beehive!: Beehive;
+
+  nestlocations$: Observable<Nestlocations[]> = new Observable<Nestlocations[]>();
+
+  // beehiveLocations = [
+  //   {lat: 51.164120751116435, lon: 4.961838518509023, name: "De C"},
+  //   {lat: 51.14956154963047, lon: 4.964806904144326, name: "Pizza Hut"}
+  // ];
 
   hornetLocations = [
     {lat: 51.16080291398481, lon: 4.9644732260095275},
@@ -37,33 +49,39 @@ export class MapComponent implements OnInit {
     features: []
   };
 
-  constructor() {}
+  constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService) {}
   
   ngOnInit(): void {
+    this.beehives$ = this.beehiveService.getBeehives();
+    this.nestlocations$ = this.nestLocationService.getAllNests();
 
-    this.beehiveLocations.forEach(location => {
-      this.beehiveJsonData.features.push({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [location.lon, location.lat] 
-        },
-        properties: {
-          title: location.name
-        }
+    this.beehives$.subscribe((locations: Beehive[]) => {
+      locations.forEach(location => {
+        this.beehiveJsonData.features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [location.longitude, location.latitude]
+          },
+          properties: {
+            title: location.beehiveName
+          }
+        });
       });
     });
     
-    this.hornetLocations.forEach(location => {
-      this.hornetJsonLocation.features.push({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [location.lon, location.lat]
-        },
-        properties: {
-          title: ''
-        }
+    this.nestlocations$.forEach((locations: Nestlocations[]) => {
+      locations.forEach(location => {
+        this.hornetJsonLocation.features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [location.estimatedLongitude, location.estimatedLatitude]
+          },
+          properties: {
+            title: ''
+          }
+        });
       });
     });
 
@@ -136,7 +154,12 @@ export class MapComponent implements OnInit {
           14, 100,
           15, 200,
           16, 400,
-          17, 800
+          17, 800,
+          18, 1600,
+          19, 3200,
+          20, 6400,
+          21, 12800,
+          22, 25600,
         ],
         'circle-color': '#da2828', 
         'circle-opacity': 0.6 
