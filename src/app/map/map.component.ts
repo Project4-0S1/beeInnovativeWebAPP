@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from '../../environments/environment';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
 

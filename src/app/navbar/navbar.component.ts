@@ -27,8 +27,6 @@ export class NavbarComponent {
 
   pages = [
     {path: '/', name: 'Home'},
-    {path: '/Kaart', name: 'Kaart'},
-    {path: '/api', name: 'API'},
   ];
 
   toggleMenu() {
