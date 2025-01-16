@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { LoginButtonComponent } from "../login-button/login-button.component";
+import { LogoutButtonComponent } from '../logout-button/logout-button.component';
+import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-navbar',
@@ -8,13 +11,15 @@ import { Router, RouterModule } from '@angular/router';
   imports: [
     CommonModule,
     RouterModule,
-  ],
+    LoginButtonComponent,
+    LogoutButtonComponent
+],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
 
-  constructor(private router: Router) {}
+  constructor(private auth: AuthService, private router: Router) {}
 
   isMobileMenuOpen = false;
 
@@ -26,5 +31,10 @@ export class NavbarComponent {
 
   toggleMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+  }
+
+  // Methode om te controleren of de gebruiker is ingelogd
+  isLoggedIn() {
+    return this.auth.isAuthenticated$; // Dit geeft een observable terug
   }
 }
