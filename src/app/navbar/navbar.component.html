@@ -30,12 +30,6 @@
           <a [routerLink]="page.path" routerLinkActive="underline" class="block py-2 px-3 text-white rounded md:bg-transparent md:text-gray-900 md:p-0 md:dark:text-white md:hover:bg-transparent md:hover:text-gray-700" aria-current="page">{{page.name}}</a>
         </li>
         }
-        <li *ngIf="auth.isAuthenticated$ | async; else loggedOut">
-          <button (click)="logout()">Logout</button>
-        </li>
-        <ng-template #loggedOut>
-          <app-auth-button></app-auth-button>
-        </ng-template>
       </ul>
     </div>
 
@@ -47,12 +41,6 @@
           <a [routerLink]="page.path" routerLinkActive="underline" class="block py-2 px-3 text-white rounded md:bg-transparent md:text-gray-900 md:p-0 md:dark:text-white md:hover:bg-transparent md:hover:text-gray-700" aria-current="page">{{page.name}}</a>
         </li>
         }
-        <li *ngIf="auth.isAuthenticated$ | async; else loggedOut" class="block py-2 px-3 rounded md:bg-transparent md:text-gray-900 md:p-0 md:dark:text-white md:hover:bg-transparent md:hover:text-gray-700">
-          <button (click)="logout()">Logout</button>
-        </li>
-        <ng-template #loggedOut>
-          <app-auth-button></app-auth-button>
-        </ng-template>
       </ul>
     </div>
   </div>
