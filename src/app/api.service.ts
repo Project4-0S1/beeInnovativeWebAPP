@@ -8,15 +8,17 @@ import { Beehive } from './beehive';
   providedIn: 'root'
 })
 export class ApiService {
+  // baseurl = "https://beeinnovative20250114142339.azurewebsites.net/api/"
+  baseurl = "https://localhost:7099/api/"
 
   constructor(private httpClient: HttpClient) {
   }
 
   getArticles(): Observable<Beehive[]> {
-    return this.httpClient.get<Beehive[]>("https://beeinnovative20250114142339.azurewebsites.net/api/beehives");
+    return this.httpClient.get<Beehive[]>(this.baseurl + "beehives");
   }
 
   getBeehiveById(id: number): Observable<Beehive> {
-    return this.httpClient.get<Beehive>("https://beeinnovative20250114142339.azurewebsites.net/api/beehives/" + id);
+    return this.httpClient.get<Beehive>(this.baseurl + "beehives/" + id);
   }
 }

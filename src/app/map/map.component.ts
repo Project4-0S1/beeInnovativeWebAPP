@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from '../../environments/environmnent';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-map',
