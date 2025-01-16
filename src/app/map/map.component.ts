@@ -1,16 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
-<<<<<<< HEAD
 import { Beehive } from '../interfaces/beehive';
 import { Observable } from 'rxjs';
 import { BeehiveService } from '../services/beehive.service';
 import { CommonModule } from '@angular/common';
 import { Nestlocations } from '../interfaces/nestlocations';
 import { NestlocationService } from '../services/nestlocation.service';
-=======
 import { environment } from '../../environments/environment';
->>>>>>> 57ab992fa1f3e9403dcdbec8acb293ab5601429d
 
 @Component({
   selector: 'app-map',
