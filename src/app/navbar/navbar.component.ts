@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { LoginButtonComponent } from "../login-button/login-button.component";
 import { LogoutButtonComponent } from '../logout-button/logout-button.component';
+import { SignupButtonComponent } from '../signup-button/signup-button.component';
 import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
@@ -12,7 +13,8 @@ import { AuthService } from '@auth0/auth0-angular';
     CommonModule,
     RouterModule,
     LoginButtonComponent,
-    LogoutButtonComponent
+    LogoutButtonComponent,
+    SignupButtonComponent
 ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
