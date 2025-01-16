@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { APIComponent } from './api.component';
+import { LogoutButtonComponent } from './logout-button.component';
 
-describe('APIComponent', () => {
-  let component: APIComponent;
-  let fixture: ComponentFixture<APIComponent>;
+describe('LogoutButtonComponent', () => {
+  let component: LogoutButtonComponent;
+  let fixture: ComponentFixture<LogoutButtonComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [APIComponent]
+      imports: [LogoutButtonComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(APIComponent);
+    fixture = TestBed.createComponent(LogoutButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

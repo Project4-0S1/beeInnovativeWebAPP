@@ -30,6 +30,15 @@
           <a [routerLink]="page.path" routerLinkActive="underline" class="block py-2 px-3 text-white rounded md:bg-transparent md:text-gray-900 md:p-0 md:dark:text-white md:hover:bg-transparent md:hover:text-gray-700" aria-current="page">{{page.name}}</a>
         </li>
         }
+        <li *ngIf="(isLoggedIn() | async) === false">
+          <lib-signup-button></lib-signup-button>
+        </li>
+        <li *ngIf="(isLoggedIn() | async) === false">
+          <lib-login-button></lib-login-button>
+        </li>
+        <li *ngIf="(isLoggedIn() | async) === true">
+          <lib-logout-button></lib-logout-button>
+        </li>
       </ul>
     </div>
 
@@ -41,6 +50,9 @@
           <a [routerLink]="page.path" routerLinkActive="underline" class="block py-2 px-3 text-white rounded md:bg-transparent md:text-gray-900 md:p-0 md:dark:text-white md:hover:bg-transparent md:hover:text-gray-700" aria-current="page">{{page.name}}</a>
         </li>
         }
+        <li>
+          <lib-login-button></lib-login-button>
+        </li>
       </ul>
     </div>
   </div>
