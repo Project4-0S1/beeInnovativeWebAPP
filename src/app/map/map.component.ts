@@ -55,6 +55,9 @@ export class MapComponent implements OnInit {
     this.beehives$ = this.beehiveService.getBeehives();
     this.nestlocations$ = this.nestLocationService.getAllNests();
 
+    console.log(this.beehives$);
+    console.log(this.nestlocations$);
+
     this.beehives$.subscribe((locations: Beehive[]) => {
       locations.forEach(location => {
         this.beehiveJsonData.features.push({
@@ -69,6 +72,8 @@ export class MapComponent implements OnInit {
         });
       });
     });
+
+    console.log("beehives added");
     
     this.nestlocations$.forEach((locations: Nestlocations[]) => {
       locations.forEach(location => {
@@ -84,6 +89,8 @@ export class MapComponent implements OnInit {
         });
       });
     });
+
+    console.log("DEBUG")
 
     this.map = new mapboxgl.Map({
       accessToken: environment.mapbox.accessToken,

@@ -1,0 +1,26 @@
+<div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">CRUD Table</h1>
+        <button class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-md shadow hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 ml-auto">
+          Add New Beehive
+        </button>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+        @for(b of beehives$ | async; track $index){
+            <div class="max-w-sm mx-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <a class="flex justify-center" href="#">
+                    <img class="rounded-t-lg" src="https://impro.usercontent.one/appid/oneComWsb/domain/geelsbieke.be/media/geelsbieke.be/onewebmedia/Logo%20Geels%20Bieke.jpg?etag=W%2F%222c44-64214718%22&sourceContentType=image%2Fjpeg&quality=85" alt="" />
+                </a>
+                <div class="p-5">
+                    <a href="#">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{b.beehive.beehiveName}}</h5>
+                    </a>
+                    <a href="#">
+                        <p class="mb-2 tracking-tight text-gray-900 dark:text-white">Active</p>
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+
+  </div>
