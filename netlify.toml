@@ -1,7 +1,8 @@
 [[redirects]]
   from = "/callback"
   to = "/"
+  status = 200
 
 [[redirects]]
   from = "/*"
-  to = "/blog"
+  to = "/"
