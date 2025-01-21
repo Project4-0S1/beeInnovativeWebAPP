@@ -9,13 +9,14 @@ import { Observable } from 'rxjs';
 })
 export class NestlocationService {
 
-  private ApiUrl = `${environment.api_url}NestLocations`
+  private ApiUrl = `${environment.api_url}nestlocations`
   
   private beehives: Nestlocations[] = [];
 
   constructor(private httpClient: HttpClient) { }
 
   getAllNests(): Observable<Nestlocations[]> {
+    console.log(this.ApiUrl)
     return this.httpClient.get<Nestlocations[]>(this.ApiUrl);
   }
 
