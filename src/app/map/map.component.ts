@@ -19,7 +19,7 @@ import { environment } from '../../environments/environment';
 export class MapComponent implements OnInit {
 
   map: mapboxgl.Map | undefined; 
-  style = 'mapbox://styles/jorrit-geurts/cm5w9qqsi00qt01s78bsb3n9j';
+  style = 'mapbox://styles/jorrit-geurts/cm66hjbon00f001s7cuxpft2p';
   lat: number = 51.16190723486903;
   lng: number = 4.961886810019829;
 
@@ -100,7 +100,6 @@ export class MapComponent implements OnInit {
 
   addGeoJsonLayer() {
     if (!this.map) {
-      console.error('Map is not initialized');
       return;
     }
 
@@ -113,27 +112,6 @@ export class MapComponent implements OnInit {
     this.map.addSource('HornetLocations', {
       type:'geojson',
       data: this.hornetJsonLocation
-    });
-
-    // Add a layer to display the points
-    this.map.addLayer({
-      id: 'location-points',
-      type: 'symbol',
-      source: 'BeehiveLocations',
-      layout: {
-        'icon-image': 'mapbox-square', // Use a predefined Mapbox icon (or custom icon)
-        'text-field': ['get', 'title'], // Show the location name as text
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-size': 12,
-        'text-offset': [0, -5],
-        'icon-size': 1.5,
-        'icon-offset':  [0, -20],
-      },
-      paint: {
-        'text-color': '#161DE9',  // Set text color
-        'text-halo-color': '#ffffff', // Optional halo around the text
-        'text-halo-width': 2, // Optional halo width for better visibility
-      }
     });
 
     this.map.addLayer({
@@ -165,5 +143,28 @@ export class MapComponent implements OnInit {
         'circle-opacity': 0.6 
       }
     });
+
+    // Add a layer to display the points
+    this.map.addLayer({
+      id: 'location-points',
+      type: 'symbol',
+      source: 'BeehiveLocations',
+      layout: {
+        'icon-image': 'map-marker-svgrepo-com', // Built-in Mapbox icon
+        'icon-size': 1.5, // Adjust size if needed
+        'icon-offset': [0, -20], // Optional offset
+        'text-field': ['get', 'title'], // Show the location name as text
+        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+        'text-size': 12,
+        'text-offset': [0, -5],
+      },
+      paint: {
+        'text-color': '#161DE9',  // Set text color
+        'text-halo-color': '#ffffff', // Optional halo around the text
+        'text-halo-width': 2, // Optional halo width for better visibility
+      }
+    });
+
+    
   }
 }
