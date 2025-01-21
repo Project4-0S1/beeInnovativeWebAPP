@@ -26,7 +26,7 @@ export class BeehiveCrudComponent implements OnInit {
   isFormVisible = false;
   EditingBeehiveId = 0;
 
-  map: mapboxgl.Map | undefined;
+  
   snapshotUrls: Map<number, string> = new Map();
   
 
