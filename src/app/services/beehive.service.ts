@@ -37,7 +37,6 @@ export class BeehiveService {
   putCategory(id:number, beehive: Beehive): Observable<Beehive> {
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json; charset=utf-8');
-    console.log(beehive);
     return this.httpClient.put<Beehive>(`${this.ApiUrl}/${id}`, beehive, {headers: headers});
   }
 }
