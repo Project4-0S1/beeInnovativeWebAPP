@@ -6,7 +6,9 @@ import { Observable } from 'rxjs';
 import { BeehiveService } from '../services/beehive.service';
 import { CommonModule } from '@angular/common';
 import { Nestlocations } from '../interfaces/nestlocations';
+import { EstimatedNestLocations } from '../interfaces/estimatedNestLocations';
 import { NestlocationService } from '../services/nestlocation.service';
+import { EstimatedNestLocationService } from '../services/estimated-nest-location.service';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -27,32 +29,34 @@ export class MapComponent implements OnInit {
   beehives$: Observable<Beehive[]> = new Observable<Beehive[]>();
   beehive!: Beehive;
 
+  estimatedNestlocations$: Observable<EstimatedNestLocations[]> = new Observable<EstimatedNestLocations[]>();
   nestlocations$: Observable<Nestlocations[]> = new Observable<Nestlocations[]>();
 
-  // beehiveLocations = [
-  //   {lat: 51.164120751116435, lon: 4.961838518509023, name: "De C"},
-  //   {lat: 51.14956154963047, lon: 4.964806904144326, name: "Pizza Hut"}
+  // hornetLocations = [
+  //   {lat: 51.16080291398481, lon: 4.9644732260095275},
+  //   {lat: 51.170209175807024, lon: 4.968067403732371}
   // ];
-
-  hornetLocations = [
-    {lat: 51.16080291398481, lon: 4.9644732260095275},
-    {lat: 51.170209175807024, lon: 4.968067403732371}
-  ];
 
   beehiveJsonData: FeatureCollection = {
     type: 'FeatureCollection',
     features: []
   };
-  
+
   hornetJsonLocation: FeatureCollection = {
     type: 'FeatureCollection',
     features: []
   };
+  
+  estimatedHornetJsonLocation: FeatureCollection = {
+    type: 'FeatureCollection',
+    features: []
+  };
 
-  constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService) {}
+  constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService) {}
   
   ngOnInit(): void {
     this.beehives$ = this.beehiveService.getBeehives();
+    this.estimatedNestlocations$ = this.estimatedNestLocationService.getAllNests();
     this.nestlocations$ = this.nestLocationService.getAllNests();
 
     this.beehives$.subscribe((locations: Beehive[]) => {
@@ -73,6 +77,21 @@ export class MapComponent implements OnInit {
     this.nestlocations$.forEach((locations: Nestlocations[]) => {
       locations.forEach(location => {
         this.hornetJsonLocation.features.push({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [location.longitude, location.latitude]
+          },
+          properties: {
+            title: ''
+          }
+        });
+      });
+    });
+    
+    this.estimatedNestlocations$.forEach((locations: EstimatedNestLocations[]) => {
+      locations.forEach(location => {
+        this.estimatedHornetJsonLocation.features.push({
           type: 'Feature',
           geometry: {
             type: 'Point',
@@ -98,6 +117,20 @@ export class MapComponent implements OnInit {
     });
   }
 
+  metersToPixelsAtZoom(meters: number, zoomLevel: number) {
+    // Constants for Mapbox tile size and projection
+    const TILE_SIZE = 512; // Mapbox default tile size
+    const WORLD_SIZE = 40075016.686; // Circumference of the Earth in meters (at the equator)
+
+    // Calculate the number of pixels per meter at the given zoom level
+    const scale = Math.pow(2, zoomLevel);
+    const metersPerPixel = WORLD_SIZE / TILE_SIZE / scale;
+
+    // Convert meters to pixels
+    return meters / metersPerPixel;
+}
+
+
   addGeoJsonLayer() {
     if (!this.map) {
       console.error('Map is not initialized');
@@ -113,6 +146,11 @@ export class MapComponent implements OnInit {
     this.map.addSource('HornetLocations', {
       type:'geojson',
       data: this.hornetJsonLocation
+    });
+    
+    this.map.addSource('EstimatedHornetLocations', {
+      type:'geojson',
+      data: this.estimatedHornetJsonLocation
     });
 
     // Add a layer to display the points
@@ -145,21 +183,51 @@ export class MapComponent implements OnInit {
           'interpolate',
           ['linear'],
           ['zoom'],
-          8, 1.5,
-          9, 3.125,
-          10, 6.25,
-          11, 12.5,
-          12, 25,
-          13, 50,
-          14, 100,
-          15, 200,
-          16, 400,
-          17, 800,
-          18, 1600,
-          19, 3200,
-          20, 6400,
-          21, 12800,
-          22, 25600,
+          8, this.metersToPixelsAtZoom(100, 8),
+          9, this.metersToPixelsAtZoom(100, 9),
+          10, this.metersToPixelsAtZoom(100, 10),
+          11, this.metersToPixelsAtZoom(100, 11),
+          12, this.metersToPixelsAtZoom(100, 12),
+          13, this.metersToPixelsAtZoom(100, 13),
+          14, this.metersToPixelsAtZoom(100, 14),
+          15, this.metersToPixelsAtZoom(100, 15),
+          16, this.metersToPixelsAtZoom(100, 16),
+          17, this.metersToPixelsAtZoom(100, 17),
+          18, this.metersToPixelsAtZoom(100, 18),
+          19, this.metersToPixelsAtZoom(100, 19),
+          20, this.metersToPixelsAtZoom(100, 20),
+          21, this.metersToPixelsAtZoom(100, 21),
+          22, this.metersToPixelsAtZoom(100, 22),
+        ],
+        'circle-color': '#da2828', 
+        'circle-opacity': 0.6 
+      }
+    });
+    
+    this.map.addLayer({
+      id: 'estimated-hornet-points',
+      type: 'circle',
+      source: 'EstimatedHornetLocations',
+      paint: {
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['zoom'],
+          8, this.metersToPixelsAtZoom(100, 8),
+          9, this.metersToPixelsAtZoom(100, 9),
+          10, this.metersToPixelsAtZoom(100, 10),
+          11, this.metersToPixelsAtZoom(100, 11),
+          12, this.metersToPixelsAtZoom(100, 12),
+          13, this.metersToPixelsAtZoom(100, 13),
+          14, this.metersToPixelsAtZoom(100, 14),
+          15, this.metersToPixelsAtZoom(100, 15),
+          16, this.metersToPixelsAtZoom(100, 16),
+          17, this.metersToPixelsAtZoom(100, 17),
+          18, this.metersToPixelsAtZoom(100, 18),
+          19, this.metersToPixelsAtZoom(100, 19),
+          20, this.metersToPixelsAtZoom(100, 20),
+          21, this.metersToPixelsAtZoom(100, 21),
+          22, this.metersToPixelsAtZoom(100, 22),
         ],
         'circle-color': '#da2828', 
         'circle-opacity': 0.6 
