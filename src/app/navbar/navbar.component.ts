@@ -26,7 +26,7 @@ export class NavbarComponent {
   isMobileMenuOpen = false;
 
   pages = [
-    {path: '/kaart', name: 'Home'},
+    {path: '/', name: 'Home'},
     {path: '/crud', name: 'Crud'},
   ];
 
