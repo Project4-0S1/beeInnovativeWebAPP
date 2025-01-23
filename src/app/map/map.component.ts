@@ -207,7 +207,8 @@ export class MapComponent implements OnInit {
   onSubmit() {
 
     this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).subscribe(() => {
-      this.addGeoJsonLayer();
+      window.location.reload();
+      this.closeModal();
     });
   }
 
