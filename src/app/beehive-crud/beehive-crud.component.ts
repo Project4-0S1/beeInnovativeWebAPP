@@ -134,8 +134,6 @@ export class BeehiveCrudComponent implements OnInit {
   }
 
   saveChanges(beehive: Beehive) {
-    console.log(beehive);
-
     delete beehive.hornetDetections;
     delete beehive.userBeehives;
 
