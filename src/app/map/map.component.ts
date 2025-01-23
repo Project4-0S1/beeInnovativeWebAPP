@@ -10,10 +10,10 @@ import { EstimatedNestLocations } from '../interfaces/estimatedNestLocations';
 import { NestlocationService } from '../services/nestlocation.service';
 import { EstimatedNestLocationService } from '../services/estimated-nest-location.service';
 import { environment } from '../../environments/environment';
+import { switchMap, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { Status } from '../interfaces/status';
 import { StatusService } from '../services/status.service';
-
 
 @Component({
   selector: 'app-map',
@@ -71,26 +71,27 @@ export class MapComponent implements OnInit {
   constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService, private statusService: StatusService) {}
   
   ngOnInit(): void {
-    this.beehives$ = this.beehiveService.getBeehives();
+    this.beehives$ = this.beehiveService.getBeehives().pipe(
+      tap((locations: Beehive[]) => {
+        // Verwerk de beehive-data
+        locations.forEach(location => {
+          this.beehiveJsonData.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [location.longitude, location.latitude]
+            },
+            properties: {
+              title: location.beehiveName
+            }
+          });
+        });
+      })
+    );
+
     this.estimatedNestlocations$ = this.estimatedNestLocationService.getAllNests();
     this.nestlocations$ = this.nestLocationService.getAllNests();
-
     this.statuses$ = this.statusService.getAllStatuses();
-
-    this.beehives$.subscribe((locations: Beehive[]) => {
-      locations.forEach(location => {
-        this.beehiveJsonData.features.push({
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [location.longitude, location.latitude]
-          },
-          properties: {
-            title: location.beehiveName
-          }
-        });
-      });
-    });
     
     this.nestlocations$.forEach((locations: Nestlocations[]) => {
       locations.forEach(location => {
@@ -148,17 +149,19 @@ export class MapComponent implements OnInit {
       });
     });
 
-    this.map = new mapboxgl.Map({
-      accessToken: environment.mapbox.accessToken,
-      container: 'map',
-      style: this.style,
-      zoom: 13,
-      center: [this.lng, this.lat],
-      interactive: true,
-    });
-
-    this.map.on('load', () => {
-      this.addGeoJsonLayer();
+    // Subscribe uitvoeren nadat alle data is verwerkt
+    this.beehives$.subscribe(() => {
+      this.map = new mapboxgl.Map({
+        accessToken: environment.mapbox.accessToken,
+        container: 'map',
+        style: this.style,
+        zoom: 13,
+        center: [this.lng, this.lat]
+      });
+  
+      this.map!.on('load', () => {
+        this.addGeoJsonLayer();
+      });
     });
 
     this.map?.on('click', (event) => {
