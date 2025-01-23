@@ -10,7 +10,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
         @for(b of beehives$ | async; track $index){
             <div class="max-w-sm mx-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a class="flex justify-center" href="#">
+                <a class="flex justify-center" href="https://www.google.com/maps/place/{{b.beehive.latitude}},{{b.beehive.longitude}}">
                     <img class="rounded-t-lg" [src]="snapshotUrls.get(b.beehiveId)" alt="" />
                 </a>
                 <div class="p-5">
