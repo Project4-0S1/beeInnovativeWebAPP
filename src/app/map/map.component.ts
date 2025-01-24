@@ -300,18 +300,8 @@ export class MapComponent implements OnInit {
       type: 'symbol',
       source: 'HornetLocationsFound',
       layout: {
-        'icon-image': 'MapMarkerHornet', // Built-in Mapbox icon
-        'icon-size': 1.5, // Adjust size if needed
-        'icon-offset': [0, -20], // Optional offset
-        'text-field': ['get', 'title'], // Show the location name as text
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-size': 12,
-        'text-offset': [0, -5],
-      },
-      paint: {
-        'text-color': '#161DE9',  // Set text color
-        'text-halo-color': '#ffffff', // Optional halo around the text
-        'text-halo-width': 2, // Optional halo width for better visibility
+        'icon-image': 'hornetnestFound', // Built-in Mapbox icon
+        'icon-size': 1.5 // Adjust size if needed
       }
     });
 
@@ -320,18 +310,8 @@ export class MapComponent implements OnInit {
       type: 'symbol',
       source: 'HornetLocationsCleared',
       layout: {
-        'icon-image': 'hu-main-4', // Built-in Mapbox icon
+        'icon-image': 'hornetCleared', // Built-in Mapbox icon
         'icon-size': 1.5, // Adjust size if needed
-        'icon-offset': [0, -20], // Optional offset
-        'text-field': ['get', 'title'], // Show the location name as text
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-size': 12,
-        'text-offset': [0, -5],
-      },
-      paint: {
-        'text-color': '#161DE9',  // Set text color
-        'text-halo-color': '#ffffff', // Optional halo around the text
-        'text-halo-width': 2, // Optional halo width for better visibility
       }
     });
     
