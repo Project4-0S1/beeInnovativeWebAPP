@@ -34,8 +34,8 @@ export const appConfig: ApplicationConfig = {
           `${environment.api_url}hornetdetections/*`,
           `${environment.api_url}nestlocations`,
           `${environment.api_url}nestlocations/*`,
-          `${environment.api_url}userbeehives`,
-          `${environment.api_url}userbeehives/*`,
+          `${environment.api_url}UserBeehives`,
+          `${environment.api_url}UserBeehives/*`,
           `${environment.api_url}status`,
           `${environment.api_url}status/*`,
         ]
