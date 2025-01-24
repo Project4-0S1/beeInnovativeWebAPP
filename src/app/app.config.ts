@@ -25,8 +25,20 @@ export const appConfig: ApplicationConfig = {
         redirect_uri: environment.redirectUri
       },
       httpInterceptor: {
-        allowedList: [`https://localhost:7099/api/beehives`,`${environment.api_url}/beehives/*`, `https://localhost:7099/api/UserBeehives`]
-        // allowedList: [`${environment.api_url}/beehives`,`${environment.api_url}/beehives/*`]
+        allowedList: [
+          `${environment.api_url}beehives`,
+          `${environment.api_url}beehives/*`,
+          `${environment.api_url}estimatednestlocations`,
+          `${environment.api_url}estimatednestlocations/*`,
+          `${environment.api_url}hornetdetections`,
+          `${environment.api_url}hornetdetections/*`,
+          `${environment.api_url}nestlocations`,
+          `${environment.api_url}nestlocations/*`,
+          `${environment.api_url}userbeehives`,
+          `${environment.api_url}userbeehives/*`,
+          `${environment.api_url}status`,
+          `${environment.api_url}status/*`,
+        ]
       }
     }),
   ]
