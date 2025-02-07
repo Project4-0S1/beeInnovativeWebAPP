@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
 import { Beehive } from '../interfaces/beehive';
-import { Observable } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 import { BeehiveService } from '../services/beehive.service';
 import { CommonModule } from '@angular/common';
 import { Nestlocations } from '../interfaces/nestlocations';
@@ -205,12 +205,84 @@ export class MapComponent implements OnInit {
   }
 
   onSubmit() {
-
-    this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).subscribe(() => {
-      window.location.reload();
+    this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).pipe(
+      switchMap(() => this.updateGeoJsonData()), // Waits for updateGeoJsonData() to complete
+    ).subscribe(() => {
+      this.removeLayers();
+      this.addGeoJsonLayer();
       this.closeModal();
     });
   }
+  
+
+  updateGeoJsonData(): Observable<void> {
+    return new Observable(observer => {
+      console.log(this.hornetLocationCleared);
+  
+      // Reset GeoJSON objects to avoid duplicates
+      this.hornetLocationDetected = { type: 'FeatureCollection', features: [] };
+      this.hornetLocationFound = { type: 'FeatureCollection', features: [] };
+      this.hornetLocationCleared = { type: 'FeatureCollection', features: [] };
+  
+      console.log(this.hornetLocationCleared);
+  
+      this.nestlocations$ = this.nestLocationService.getAllNests();
+  
+      this.nestlocations$.pipe(
+        // Ensure we process the data before continuing
+        tap((locations: Nestlocations[]) => {
+          locations.forEach(location => {
+            if (location.statusId == 1) {
+              this.hornetLocationDetected.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude]
+                },
+                properties: {
+                  id: location.id
+                }
+              });
+            } else if (location.statusId == 2) {
+              this.hornetLocationFound.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude]
+                },
+                properties: {
+                  id: location.id
+                }
+              });
+            } else if (location.statusId == 3) {
+              this.hornetLocationCleared.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude]
+                },
+                properties: {
+                  id: location.id
+                }
+              });
+            }
+          });
+  
+          console.log('Updated hornetLocationCleared:', this.hornetLocationCleared);
+        })
+      ).subscribe({
+        next: () => {
+          observer.next(); // Signals that the data update is complete
+          observer.complete(); // Ends the observable
+        },
+        error: (error) => {
+          console.error('Error fetching nest locations:', error);
+          observer.error(error);
+        }
+      });
+    });
+  }
+  
 
   closeModal() {
     this.nestForm = {id: 0, statusId: 0, latitude: 0, longitude: 0};
@@ -261,6 +333,8 @@ export class MapComponent implements OnInit {
       type:'geojson',
       data: this.estimatedHornetJsonLocation
     });
+
+    console.log(this.hornetLocationCleared)
 
     this.map.addLayer({
       id: 'hornet-points-detected',
@@ -381,8 +455,43 @@ export class MapComponent implements OnInit {
         'text-halo-color': '#ffffff', // Optional halo around the text
         'text-halo-width': 2, // Optional halo width for better visibility
       }
-    });
-
-    
+    }); 
   }
+
+  removeLayers() {
+    if (!this.map) return;
+  
+    const layersToRemove = [
+      'hornet-points-detected',
+      'hornet-points-found',
+      'hornet-points-cleared',
+      'estimated-hornet-points',
+      'location-points'
+    ];
+  
+    const sourcesToRemove = [
+      'HornetLocationsDetected',
+      'HornetLocationsFound',
+      'HornetLocationsCleared',
+      'EstimatedHornetLocations',
+      'BeehiveLocations'
+    ];
+  
+    // Remove layers if they exist
+    layersToRemove.forEach(layerId => {
+      if (this.map!.getLayer(layerId)) {
+        console.log("remove" + layerId)
+        this.map!.removeLayer(layerId);
+      }
+    });
+  
+    // Remove sources if they exist
+    sourcesToRemove.forEach(sourceId => {
+      if (this.map!.getSource(sourceId)) {
+        this.map!.removeSource(sourceId);
+      }
+    });
+  }
+  
+  
 }
