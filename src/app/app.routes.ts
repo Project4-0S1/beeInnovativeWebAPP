@@ -7,5 +7,5 @@ import { DetectionsComponent } from './detections/detections.component';
 export const routes: Routes = [
     { path: '', component: MapComponent, canActivate: [AuthGuard] },
     { path: 'crud', component: BeehiveCrudComponent, canActivate: [AuthGuard] },
-    { path: 'detections', component: DetectionsComponent, canActivate: [AuthGuard] }
+    { path: 'detections/:beehiveId', component: DetectionsComponent, canActivate: [AuthGuard] }
 ];
