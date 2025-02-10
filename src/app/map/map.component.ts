@@ -28,6 +28,8 @@ export class MapComponent implements OnInit {
   style = 'mapbox://styles/jorrit-geurts/cm66hjbon00f001s7cuxpft2p';
   lat: number = 51.16190723486903;
   lng: number = 4.961886810019829;
+  selectedMarker: mapboxgl.Marker | null = null;
+
 
   //Beehives
   beehives$: Observable<Beehive[]> = new Observable<Beehive[]>();
@@ -64,7 +66,7 @@ export class MapComponent implements OnInit {
     features: []
   };
 
-  isVisible = false;
+  formIsVisible = false;
   formId: number = 0;
   nestForm: Nestlocations = {id: 0, statusId: 0, latitude: 0, longitude: 0}
 
@@ -169,125 +171,103 @@ export class MapComponent implements OnInit {
       if (features && features.length > 0) {
         const clickedFeature = features[0];
 
-        this.isVisible = true;
+        this.formIsVisible = true;
     
         // Check the layer ID to determine the action
         switch (clickedFeature.layer!.id) {
           case 'hornet-points-found':
             this.formId = clickedFeature.properties!['id'];
             this.nestlocations$.subscribe((result: Nestlocations[]) => {
-              const selectedNest = result[this.formId - 1];
-              this.nestForm = selectedNest;
-              this.nestForm.id = selectedNest.id;
+              const selectedNest = result.find(nest => nest.id === this.formId);
+              if (!selectedNest) {
+                console.error(`Nest with ID ${this.formId} not found`);
+              } else {
+                this.nestForm = selectedNest;
+                this.nestForm.id = selectedNest.id;
+              }            
             });
             break;
     
           case 'hornet-points-detected':
             this.formId = clickedFeature.properties!['id'];
             this.nestlocations$.subscribe((result: Nestlocations[]) => {
-              const selectedNest = result[this.formId - 1];
-              this.nestForm = selectedNest;
-              this.nestForm.id = selectedNest.id;
+              const selectedNest = result.find(nest => nest.id === this.formId);
+              if (!selectedNest) {
+                console.error(`Nest with ID ${this.formId} not found`);
+              } else {
+                this.nestForm = selectedNest;
+                this.nestForm.id = selectedNest.id;
+              }    
             });
             break;
     
           case 'hornet-points-cleared':
             this.formId = clickedFeature.properties!['id'];
             this.nestlocations$.subscribe((result: Nestlocations[]) => {
-              const selectedNest = result[this.formId - 1];
-              this.nestForm = selectedNest;
-              this.nestForm.id = selectedNest.id;
+              const selectedNest = result.find(nest => nest.id === this.formId);
+              if (!selectedNest) {
+                console.error(`Nest with ID ${this.formId} not found`);
+              } else {
+                this.nestForm = selectedNest;
+                this.nestForm.id = selectedNest.id;
+              }    
             });
             break;
         }
+      }
+      else{
+        this.addPinpointMarker(event.lngLat.lng, event.lngLat.lat);
       }
     });
   }
 
   onSubmit() {
-    this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).pipe(
+    if(this.formId != 0){
+      this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).pipe(
+        switchMap(() => this.updateGeoJsonData()), // Waits for updateGeoJsonData() to complete
+      ).subscribe(() => {
+        this.removeLayers();
+        this.closeModal();
+      });
+    }
+    else {
+      this.nestLocationService.postNewNestLocation(this.nestForm).pipe(
+        switchMap(() => this.updateGeoJsonData()), // Waits for updateGeoJsonData() to complete
+      ).subscribe(() => {
+        this.removeLayers();
+        this.closeModal();
+      });
+    }
+  }
+  
+  openEditMode(){
+    this.removeLayers();
+    this.formIsVisible = false;
+  }
+
+  closeModal() {
+    this.nestForm = {id: 0, statusId: 0, latitude: 0, longitude: 0};
+    this.formId = 0;
+    this.formIsVisible = false;
+    this.addGeoJsonLayer();
+  }
+
+  addPinpointMarker(lng: number, lat: number) {
+    // Update form with new coordinates
+    this.nestForm.latitude = lat;
+    this.nestForm.longitude = lng;
+    this.formIsVisible = true;
+  }
+
+  deleteMarker(){
+    this.nestLocationService.deleteNestLocation(this.formId).pipe(
       switchMap(() => this.updateGeoJsonData()), // Waits for updateGeoJsonData() to complete
     ).subscribe(() => {
       this.removeLayers();
-      this.addGeoJsonLayer();
       this.closeModal();
     });
   }
   
-
-  updateGeoJsonData(): Observable<void> {
-    return new Observable(observer => {
-      console.log(this.hornetLocationCleared);
-  
-      // Reset GeoJSON objects to avoid duplicates
-      this.hornetLocationDetected = { type: 'FeatureCollection', features: [] };
-      this.hornetLocationFound = { type: 'FeatureCollection', features: [] };
-      this.hornetLocationCleared = { type: 'FeatureCollection', features: [] };
-  
-      console.log(this.hornetLocationCleared);
-  
-      this.nestlocations$ = this.nestLocationService.getAllNests();
-  
-      this.nestlocations$.pipe(
-        // Ensure we process the data before continuing
-        tap((locations: Nestlocations[]) => {
-          locations.forEach(location => {
-            if (location.statusId == 1) {
-              this.hornetLocationDetected.features.push({
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [location.longitude, location.latitude]
-                },
-                properties: {
-                  id: location.id
-                }
-              });
-            } else if (location.statusId == 2) {
-              this.hornetLocationFound.features.push({
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [location.longitude, location.latitude]
-                },
-                properties: {
-                  id: location.id
-                }
-              });
-            } else if (location.statusId == 3) {
-              this.hornetLocationCleared.features.push({
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [location.longitude, location.latitude]
-                },
-                properties: {
-                  id: location.id
-                }
-              });
-            }
-          });
-  
-          console.log('Updated hornetLocationCleared:', this.hornetLocationCleared);
-        })
-      ).subscribe({
-        next: () => {
-          observer.next(); // Signals that the data update is complete
-          observer.complete(); // Ends the observable
-        },
-        error: (error) => {
-          console.error('Error fetching nest locations:', error);
-          observer.error(error);
-        }
-      });
-    });
-  }
-  
-
-  closeModal() {
-    this.nestForm = {id: 0, statusId: 0, latitude: 0, longitude: 0};
-    this.isVisible = false;
-  }
 
   metersToPixelsAtZoom(meters: number, zoomLevel: number) {
     // Constants for Mapbox tile size and projection
@@ -457,6 +437,68 @@ export class MapComponent implements OnInit {
       }
     }); 
   }
+
+  updateGeoJsonData(): Observable<void> {
+    return new Observable(observer => {
+      // Reset GeoJSON objects to avoid duplicates
+      this.hornetLocationDetected = { type: 'FeatureCollection', features: [] };
+      this.hornetLocationFound = { type: 'FeatureCollection', features: [] };
+      this.hornetLocationCleared = { type: 'FeatureCollection', features: [] };
+      this.nestlocations$ = this.nestLocationService.getAllNests();
+  
+      this.nestlocations$.pipe(
+        // Ensure we process the data before continuing
+        tap((locations: Nestlocations[]) => {
+          locations.forEach(location => {
+            if (location.statusId == 1) {
+              this.hornetLocationDetected.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude]
+                },
+                properties: {
+                  id: location.id
+                }
+              });
+            } else if (location.statusId == 2) {
+              this.hornetLocationFound.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude]
+                },
+                properties: {
+                  id: location.id
+                }
+              });
+            } else if (location.statusId == 3) {
+              this.hornetLocationCleared.features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [location.longitude, location.latitude]
+                },
+                properties: {
+                  id: location.id
+                }
+              });
+            }
+          });
+
+        })
+      ).subscribe({
+        next: () => {
+          observer.next(); // Signals that the data update is complete
+          observer.complete(); // Ends the observable
+        },
+        error: (error) => {
+          observer.error(error);
+        }
+      });
+    });
+  }
+  
 
   removeLayers() {
     if (!this.map) return;
