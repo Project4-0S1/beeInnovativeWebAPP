@@ -24,11 +24,22 @@ export class NestlocationService {
     return this.httpClient.get<Nestlocations>(`${this.ApiUrl}/${id}`);
   }
 
+  postNewNestLocation(nestlocation: Nestlocations): Observable<Nestlocations> {
+    let headers = new HttpHeaders();
+    headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+    return this.httpClient.post<Nestlocations>(`${this.ApiUrl}/`, nestlocation, { headers: headers });
+  }
+
   putStatus(id:number, nestlocation: Nestlocations): Observable<Nestlocations> {
     delete nestlocation.status;
-    
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json; charset=utf-8');
     return this.httpClient.put<Nestlocations>(`${this.ApiUrl}/${id}`, nestlocation, {headers: headers});
+  }
+
+  deleteNestLocation(id: number): Observable<Nestlocations> {
+    let headers = new HttpHeaders();
+    headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+    return this.httpClient.delete<Nestlocations>(`${this.ApiUrl}/${id}`, {headers: headers});
   }
 }

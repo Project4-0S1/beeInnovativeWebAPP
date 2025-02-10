@@ -3,7 +3,7 @@
       <h1 class="text-center text-lg font-semibold">Map</h1>
       <div id="map" class="map border border-gray-300 rounded-lg" style="width: 100%; height: 500px;"></div>
 
-      @if(isVisible){
+      @if(formIsVisible){
         <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full relative">
                 <button 
@@ -11,57 +11,67 @@
                     (click)="closeModal()"
                 >X</button>
                 <h2 class="text-lg font-bold mb-4 text-gray-900">Edit Nestlocation {{nestForm.id}}</h2>
-                <form (ngSubmit)="onSubmit()" #StatusForm="ngForm">
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="name">
-                            Latitude
-                        </label>
-                        <input 
-                            id="latitude" 
-                            type="text" 
-                            name="latitude"
-                            class="w-full border rounded-lg px-3 py-2" 
-                            required
-                            [(ngModel)]="nestForm.latitude"
-                            #formName="ngModel"
-                        />
-                        <div [hidden]="formName.valid || formName.pristine" class="text-red-500 mt-2">Name is required</div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="name">
-                            Longitude
-                        </label>
-                        <input 
-                            id="longitude" 
-                            type="text" 
-                            name="longitude"
-                            class="w-full border rounded-lg px-3 py-2" 
-                            required
-                            [(ngModel)]="nestForm.longitude"
-                            #formName="ngModel"
-                        />
-                        <div [hidden]="formName.valid || formName.pristine" class="text-red-500 mt-2">Name is required</div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-2" for="location">
-                            Selecteer het correcte mac-adres
-                        </label>
-                            @for (s of statuses$ | async; track s){
-                              <input type="radio" [id]="s.id"
-                              name="statuses" [value]="s.id"
-                              [checked]="s.id === 1"
-                              [(ngModel)]="nestForm.statusId">
-                            <label for="statuses">{{s.type}}</label>
-                          }
-                    </div>
-                    <!-- Submit Button -->
-                    <button 
-                        type="submit" 
-                        class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
-                    >
-                        Add Beehive
-                    </button>
-                </form>
+                <div>
+                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700" 
+                    (click)="openEditMode()"
+                    >Pinpoint Location</button>
+
+                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700" 
+                    (click)="deleteMarker()"
+                    >Delete</button>
+                    
+                    <form (ngSubmit)="onSubmit()" #StatusForm="ngForm">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2" for="name">
+                                Latitude
+                            </label>
+                            <input 
+                                id="latitude" 
+                                type="text" 
+                                name="latitude"
+                                class="w-full border rounded-lg px-3 py-2" 
+                                required
+                                [(ngModel)]="nestForm.latitude"
+                                #formName="ngModel"
+                            />
+                            <div [hidden]="formName.valid || formName.pristine" class="text-red-500 mt-2">Name is required</div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2" for="name">
+                                Longitude
+                            </label>
+                            <input 
+                                id="longitude" 
+                                type="text" 
+                                name="longitude"
+                                class="w-full border rounded-lg px-3 py-2" 
+                                required
+                                [(ngModel)]="nestForm.longitude"
+                                #formName="ngModel"
+                            />
+                            <div [hidden]="formName.valid || formName.pristine" class="text-red-500 mt-2">Name is required</div>
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2" for="location">
+                                Selecteer het correcte mac-adres
+                            </label>
+                                @for (s of statuses$ | async; track s){
+                                <input type="radio" [id]="s.id"
+                                name="statuses" [value]="s.id"
+                                [checked]="s.id === 1"
+                                [(ngModel)]="nestForm.statusId">
+                                <label for="statuses">{{s.type}}</label>
+                            }
+                        </div>
+                        <!-- Submit Button -->
+                        <button 
+                            type="submit" 
+                            class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
+                        >
+                            Add Beehive
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     }    
