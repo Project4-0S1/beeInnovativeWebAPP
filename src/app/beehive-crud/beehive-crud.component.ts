@@ -10,11 +10,12 @@ import { switchMap, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-beehive-crud',
   standalone: true,
-  imports: [CommonModule, BeehiveFormComponent, FormsModule],
+  imports: [CommonModule, BeehiveFormComponent, FormsModule, RouterModule],
   templateUrl: './beehive-crud.component.html',
   styleUrl: './beehive-crud.component.css'
 })

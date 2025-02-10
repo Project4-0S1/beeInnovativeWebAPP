@@ -30,14 +30,14 @@ export const appConfig: ApplicationConfig = {
           `${environment.api_url}beehives/*`,
           `${environment.api_url}estimatednestlocations`,
           `${environment.api_url}estimatednestlocations/*`,
-          `${environment.api_url}hornetdetections`,
-          `${environment.api_url}hornetdetections/*`,
+          `${environment.api_url}HornetDetections`,
+          `${environment.api_url}HornetDetections/*`,
           `${environment.api_url}nestlocations`,
           `${environment.api_url}nestlocations/*`,
           `${environment.api_url}UserBeehives`,
           `${environment.api_url}UserBeehives/*`,
-          `${environment.api_url}status`,
-          `${environment.api_url}status/*`,
+          `${environment.api_url}Status`,
+          `${environment.api_url}Status/*`,
         ]
       }
     }),
