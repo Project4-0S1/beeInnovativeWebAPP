@@ -5,6 +5,8 @@ import { HornetDetection } from '../interfaces/HornetDetection';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { Beehive } from '../interfaces/beehive';
+import { BeehiveService } from '../services/beehive.service';
 
 @Component({
   selector: 'app-detections',
@@ -17,9 +19,11 @@ export class DetectionsComponent implements OnInit {
   detections!: Observable<HornetDetection[]>;
   errorMessage: string = '';
   beehiveId?: number;
+  beehive?: Beehive;
 
   constructor(
     private detectionService: DetectionService,
+    private beehiveService: BeehiveService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -33,10 +37,6 @@ export class DetectionsComponent implements OnInit {
 
   getDetections() {
     this.detections = this.detectionService.getDetections(this.beehiveId);
-  }
-
-  edit(id: number) {
-    this.router.navigate([""])
   }
 
   delete(id: number) {
