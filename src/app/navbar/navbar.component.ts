@@ -26,8 +26,8 @@ export class NavbarComponent {
   isMobileMenuOpen = false;
 
   pages = [
-    {path: '/', name: 'Home'},
-    {path: '/crud', name: 'Detections'},
+    {path: '/', name: 'Kaart'},
+    {path: '/crud', name: 'Bijenkorven'},
   ];
 
   toggleMenu() {

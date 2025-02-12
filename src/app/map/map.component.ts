@@ -13,6 +13,8 @@ import { environment } from '../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { Status } from '../interfaces/status';
 import { StatusService } from '../services/status.service';
+import { UserBeehiveService } from '../services/user-beehive.service';
+import { UserBeehive } from '../interfaces/user-beehive';
 
 
 @Component({
@@ -32,7 +34,7 @@ export class MapComponent implements OnInit {
 
 
   //Beehives
-  beehives$: Observable<Beehive[]> = new Observable<Beehive[]>();
+  beehives$: Observable<UserBeehive[]> = new Observable<UserBeehive[]>();
   beehive!: Beehive;
 
   //Statuses
@@ -70,25 +72,25 @@ export class MapComponent implements OnInit {
   formId: number = 0;
   nestForm: Nestlocations = {id: 0, statusId: 0, latitude: 0, longitude: 0}
 
-  constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService, private statusService: StatusService) {}
+  constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService, private statusService: StatusService, private userBeehiveService: UserBeehiveService) {}
   
   ngOnInit(): void {
-    this.beehives$ = this.beehiveService.getBeehives();
+    this.beehives$ = this.userBeehiveService.getAll();
     this.estimatedNestlocations$ = this.estimatedNestLocationService.getAllNests();
     this.nestlocations$ = this.nestLocationService.getAllNests();
 
     this.statuses$ = this.statusService.getAllStatuses();
 
-    this.beehives$.subscribe((locations: Beehive[]) => {
+    this.beehives$.subscribe((locations: UserBeehive[]) => {
       locations.forEach(location => {
         this.beehiveJsonData.features.push({
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [location.longitude, location.latitude]
+            coordinates: [location.beehive.longitude, location.beehive.latitude]
           },
           properties: {
-            title: location.beehiveName
+            title: location.beehive.beehiveName
           }
         });
       });
@@ -351,18 +353,8 @@ export class MapComponent implements OnInit {
       type: 'symbol',
       source: 'HornetLocationsFound',
       layout: {
-        'icon-image': 'MapMarkerHornet', // Built-in Mapbox icon
+        'icon-image': 'hornetnestFound', // Built-in Mapbox icon
         'icon-size': 1.5, // Adjust size if needed
-        'icon-offset': [0, -20], // Optional offset
-        'text-field': ['get', 'title'], // Show the location name as text
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-size': 12,
-        'text-offset': [0, -5],
-      },
-      paint: {
-        'text-color': '#161DE9',  // Set text color
-        'text-halo-color': '#ffffff', // Optional halo around the text
-        'text-halo-width': 2, // Optional halo width for better visibility
       }
     });
 
@@ -371,18 +363,8 @@ export class MapComponent implements OnInit {
       type: 'symbol',
       source: 'HornetLocationsCleared',
       layout: {
-        'icon-image': 'hu-main-4', // Built-in Mapbox icon
+        'icon-image': 'hornetCleared', // Built-in Mapbox icon
         'icon-size': 1.5, // Adjust size if needed
-        'icon-offset': [0, -20], // Optional offset
-        'text-field': ['get', 'title'], // Show the location name as text
-        'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
-        'text-size': 12,
-        'text-offset': [0, -5],
-      },
-      paint: {
-        'text-color': '#161DE9',  // Set text color
-        'text-halo-color': '#ffffff', // Optional halo around the text
-        'text-halo-width': 2, // Optional halo width for better visibility
       }
     });
     
