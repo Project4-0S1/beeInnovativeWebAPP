@@ -21,6 +21,10 @@ export class DetectionService {
     return this.httpClient.get<HornetDetection>(`${this.ApiUrl}/${id}`);
   }
 
+  putDetection(id:number, detection: HornetDetection): Observable<HornetDetection> {
+    return this.httpClient.put<HornetDetection>(this.ApiUrl + '/' + id, detection);
+  }
+
   deleteDetection(id: number): Observable<HornetDetection> {
     return this.httpClient.delete<HornetDetection>(`${this.ApiUrl}/${id}`);
   }
