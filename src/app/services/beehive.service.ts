@@ -23,6 +23,10 @@ export class BeehiveService {
     return this.httpClient.get<Beehive>(`${this.ApiUrl}/${id}`);
   }
 
+  getBeehiveByIotId(id: string): Observable<Beehive> {
+    return this.httpClient.get<Beehive>(`${this.ApiUrl}/iot/${id}`);
+  }
+
   getFilteredBeehieves(filterByUserBeehives: boolean): Observable<Beehive[]> {
     let params = new HttpParams();
 

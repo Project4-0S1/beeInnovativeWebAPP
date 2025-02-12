@@ -25,8 +25,9 @@ export class BeehiveCrudComponent implements OnInit {
   newUserBeehive: Observable<UserBeehive> = new Observable<UserBeehive>();
 
   isFormVisible = false;
+  isAddNew = false;
   EditingBeehiveId = 0;
-
+  EditingBeehiveAngle = 0;
   
   snapshotUrls: Map<number, string> = new Map();
   
@@ -43,8 +44,15 @@ export class BeehiveCrudComponent implements OnInit {
     });
   }
 
-  openForm() {
+  openForm(type: boolean) {
     this.isFormVisible = true;
+    
+    if(type){
+      this.isAddNew = true
+    }
+    else{
+      this.isAddNew = false
+    }
   }
 
   closeForm() {
@@ -87,21 +95,27 @@ export class BeehiveCrudComponent implements OnInit {
   }
 
   handleFormSubmit(formData: any) {
+    if(formData.formIotDevice == ''){
+      this.currentBeehive = this.beehiveService.getBeehiveById(formData.beehiveId);
+    }
     // Chain observables using switchMap
-    this.currentBeehive = this.beehiveService.getBeehiveById(formData.beehiveId);
+    else{
+      this.currentBeehive = this.beehiveService.getBeehiveByIotId(formData.formIotDevice);
+    }
+    
 
     this.currentBeehive
       .pipe(
         // Update the beehive
         switchMap((beehive) => {
-          beehive.beehiveName = formData.name;
+          beehive.beehiveName = beehive.beehiveName;
           return this.beehiveService.putCategory(beehive.id, beehive).pipe(
             tap((response) => console.log('Beehive updated successfully:', response)),
 
             // Emit a new UserBeehive object for the next step
             switchMap(() =>
               of({
-                beehiveId: formData.beehiveId,
+                beehiveId: beehive.id,
                 userId: 1,
               } as UserBeehive)
             )
@@ -121,7 +135,6 @@ export class BeehiveCrudComponent implements OnInit {
         complete: () => {
           console.log('All operations completed successfully.');
           this.closeForm();
-          
           window.location.reload();
         },
         error: (err) => console.error('An error occurred:', err),
@@ -130,8 +143,13 @@ export class BeehiveCrudComponent implements OnInit {
       
   }
 
-  startEditing(b: number) {
-    this.EditingBeehiveId = b;
+  startEditing(b: number, editType: Boolean) {
+    if(editType){
+      this.EditingBeehiveId = b;
+    }
+    else{
+      this.EditingBeehiveAngle = b
+    }
   }
 
   saveChanges(beehive: Beehive) {
@@ -146,5 +164,6 @@ export class BeehiveCrudComponent implements OnInit {
     })
 
     this.EditingBeehiveId = 0;
+    this.EditingBeehiveAngle = 0;
   }
 }

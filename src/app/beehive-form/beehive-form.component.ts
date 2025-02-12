@@ -16,12 +16,18 @@ import { fakeAsync } from '@angular/core/testing';
 export class BeehiveFormComponent {
 
   @Input() isVisible = false;
+  @Input() isAddNew = false;
   @Output() close = new EventEmitter<void>();
   @Output() submitForm = new EventEmitter<any>();
 
   beehives$: Observable<Beehive[]> = new Observable<Beehive[]>();
 
-  constructor(private b: BeehiveService) {}
+  formBeehive$: Observable<Beehive> = new Observable<Beehive>();
+
+
+  constructor(private b: BeehiveService) {
+  
+  }
 
   ngOnInit(): void{
     this.beehives$ = this.b.getFilteredBeehieves(true);
@@ -34,7 +40,10 @@ export class BeehiveFormComponent {
     latitude:'',
     longitude: '',
     userId: '',
+    formIotDevice: '',
   };
+
+  
 
   closeModal() {
     this.close.emit();
