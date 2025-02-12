@@ -43,8 +43,6 @@ export class BeehiveFormComponent {
     formIotDevice: '',
   };
 
-  
-
   closeModal() {
     this.close.emit();
   }

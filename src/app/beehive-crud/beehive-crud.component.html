@@ -19,9 +19,14 @@
     <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-center px-4">
     @for(b of beehives$ | async; track $index){
         <div class="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-full max-w-sm mx-auto">
-            <a class="flex justify-center" href="https://www.google.com/maps/place/{{b.beehive.latitude}},{{b.beehive.longitude}}">
-                <img class="rounded-t-lg w-full" [src]="snapshotUrls.get(b.beehiveId)" alt="Beehive Image" />
-            </a>
+            <div class="relative inline-block w-full">           
+                <a class="flex justify-center" href="https://www.google.com/maps/place/{{b.beehive.latitude}},{{b.beehive.longitude}}">
+                    <img class="rounded-t-lg w-full" [src]="snapshotUrls.get(b.beehiveId)" alt="Beehive Image" />
+                </a>
+                <button (click)="deleteConnection(b.id)">
+                    <img class="absolute top-2 right-2 w-8 h-8 cursor-pointer" src="assets/trashbin.svg" alt="Delete" />
+                </button>
+            </div>
             <div class="p-5">
                 @if(EditingBeehiveId !== b.beehiveId)
                 {
