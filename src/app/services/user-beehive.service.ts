@@ -28,4 +28,10 @@ export class UserBeehiveService {
       headers = headers.set('Content-Type', 'application/json; charset=utf-8');
       return this.httpClient.post<UserBeehive>(`${this.ApiUrl}`, ub, { headers: headers });
     }
+
+    deleteUserBeehiveConnection(id: number):Observable<UserBeehive> {
+      let headers = new HttpHeaders();
+      headers = headers.set('Content-Type', 'application/json; charset=utf-8');
+      return this.httpClient.delete<UserBeehive>(`${this.ApiUrl}/${id}`, {headers: headers});
+    }
 }

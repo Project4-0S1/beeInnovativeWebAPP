@@ -38,6 +38,8 @@ export const appConfig: ApplicationConfig = {
           `${environment.api_url}UserBeehives/*`,
           `${environment.api_url}Status`,
           `${environment.api_url}Status/*`,
+          `${environment.api_url}users`,
+          `${environment.api_url}users/*`,
         ]
       }
     }),
