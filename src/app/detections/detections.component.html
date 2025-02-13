@@ -7,6 +7,14 @@
   <div class="mb-4">
     <h1 class="text-3xl font-bold">Detections</h1>
   </div>
+  <div class="flex justify-end">
+    <button
+      class="px-4 py-2 rounded-md bg-yellow-600 text-white hover:bg-yellow-700"
+      (click)="add()"
+    >
+      Add Detection
+    </button>
+  </div>
   <div class="overflow-x-auto">
     <div class="inline-block min-w-full overflow-hidden align-middle border-b border-gray-200 shadow sm:rounded-lg">
       <table class="min-w-full divide-y divide-gray-200">

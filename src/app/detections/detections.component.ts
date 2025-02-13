@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { DetectionService } from '../services/detection.service';
 import { HornetDetection } from '../interfaces/HornetDetection';
 import { CommonModule, AsyncPipe } from '@angular/common';
@@ -11,7 +11,7 @@ import { BeehiveService } from '../services/beehive.service';
 @Component({
   selector: 'app-detections',
   standalone: true,
-  imports: [CommonModule, AsyncPipe],
+  imports: [CommonModule, AsyncPipe, RouterModule],
   templateUrl: './detections.component.html',
   styleUrl: './detections.component.css'
 })
@@ -23,7 +23,6 @@ export class DetectionsComponent implements OnInit {
 
   constructor(
     private detectionService: DetectionService,
-    private beehiveService: BeehiveService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -37,6 +36,10 @@ export class DetectionsComponent implements OnInit {
 
   getDetections() {
     this.detections = this.detectionService.getDetections(this.beehiveId);
+  }
+
+  add() {
+    this.router.navigate(['/add', this.beehiveId], { state: { mode: 'add' } })
   }
 
   delete(id: number) {
