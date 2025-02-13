@@ -128,7 +128,13 @@ export class BeehiveCrudComponent implements OnInit {
       switchMap((userId) =>
         this.currentBeehive.pipe(
           switchMap((beehive) => {
-            beehive.beehiveName = beehive.beehiveName;
+            if(formData.name != ''){
+              beehive.beehiveName = formData.name;
+            }
+            else{
+              beehive.beehiveName = beehive.beehiveName
+            }
+
             return this.beehiveService.putBeehive(beehive.iotId, beehive).pipe(
               tap((response) =>
                 console.log('Beehive updated successfully:', response)

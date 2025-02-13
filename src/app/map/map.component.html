@@ -1,80 +1,116 @@
-<div class="p-4 flex justify-center">
-    <div class="w-full md:w-3/4 lg:w-1/2">
-      <h1 class="text-center text-lg font-semibold">Map</h1>
-      <div id="map" class="map border border-gray-300 rounded-lg" style="width: 100%; height: 500px;"></div>
+<div class="fixed inset-0 flex flex-col">
+    <div id="map" class="flex-1 border border-gray-300" style="width: 100%; height: 100%;"></div>
 
-      @if(formIsVisible){
+    @if(formIsVisible){
         <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full relative">
                 <button 
                     class="absolute top-2 right-2 text-gray-500 hover:text-black" 
                     (click)="closeModal()"
                 >X</button>
-                <h2 class="text-lg font-bold mb-4 text-gray-900">Edit Nestlocation {{nestForm.id}}</h2>
+                @if(nestForm.id){
+                    <h2 class="text-lg font-bold mb-4 text-gray-900">Bewerk detectie</h2>
+                }
+                @else {
+                    <h2 class="text-lg font-bold mb-4 text-gray-900">Nieuwe hoorenaarnest toevoegen</h2>
+                }
                 <div>
-                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700" 
+                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 mb-4" 
                     (click)="openEditMode()"
-                    >Pinpoint Location</button>
-
-                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700" 
-                    (click)="deleteMarker()"
-                    >Delete</button>
+                    >Nieuwe Locatie Aanduiden</button>
                     
                     <form (ngSubmit)="onSubmit()" #StatusForm="ngForm">
+                        <div class="mb-4 flex flex-nowrap gap-4">
+                            <!-- Latitude -->
+                            <div class="w-full md:w-1/2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2" for="latitude">
+                                    Latitude
+                                </label>
+                                <input 
+                                    id="latitude" 
+                                    type="text" 
+                                    name="latitude"
+                                    class="w-full border rounded-lg px-3 py-2" 
+                                    required
+                                    [(ngModel)]="nestForm.latitude"
+                                    #latitudeInput="ngModel"
+                                />
+                                <div [hidden]="latitudeInput.valid || latitudeInput.pristine" class="text-red-500 mt-2">
+                                    Latitude is required
+                                </div>
+                            </div>
+                        
+                            <!-- Longitude -->
+                            <div class="w-full md:w-1/2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2" for="longitude">
+                                    Longitude
+                                </label>
+                                <input 
+                                    id="longitude" 
+                                    type="text" 
+                                    name="longitude"
+                                    class="w-full border rounded-lg px-3 py-2" 
+                                    required
+                                    [(ngModel)]="nestForm.longitude"
+                                    #longitudeInput="ngModel"
+                                />
+                                <div [hidden]="longitudeInput.valid || longitudeInput.pristine" class="text-red-500 mt-2">
+                                    Longitude is required
+                                </div>
+                            </div>
+                        </div>                        
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2" for="name">
-                                Latitude
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Selecteer uw status
                             </label>
-                            <input 
-                                id="latitude" 
-                                type="text" 
-                                name="latitude"
-                                class="w-full border rounded-lg px-3 py-2" 
-                                required
-                                [(ngModel)]="nestForm.latitude"
-                                #formName="ngModel"
-                            />
-                            <div [hidden]="formName.valid || formName.pristine" class="text-red-500 mt-2">Name is required</div>
+                        
+                            <div class="space-y-2">
+                                @for (s of statuses$ | async; track s) {
+                                    <label class="flex items-center space-x-3 p-3 rounded-lg border border-gray-300 cursor-pointer hover:bg-gray-100 transition"
+                                        [for]="'status-' + s.id">
+                                        
+                                        <!-- Visible Radio Button -->
+                                        <input type="radio" [id]="'status-' + s.id"
+                                            name="statuses"
+                                            [value]="s.id"
+                                            [checked]="s.id === nestForm.statusId"
+                                            [(ngModel)]="nestForm.statusId"
+                                            class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-gray-300">
+                                        
+                                        <!-- Label Text -->
+                                        <span class="text-gray-700 font-medium">
+                                            {{ s.type }}
+                                        </span>
+                                    </label>
+                                }
+                            </div>
                         </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2" for="name">
-                                Longitude
-                            </label>
-                            <input 
-                                id="longitude" 
-                                type="text" 
-                                name="longitude"
-                                class="w-full border rounded-lg px-3 py-2" 
-                                required
-                                [(ngModel)]="nestForm.longitude"
-                                #formName="ngModel"
-                            />
-                            <div [hidden]="formName.valid || formName.pristine" class="text-red-500 mt-2">Name is required</div>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2" for="location">
-                                Selecteer het correcte mac-adres
-                            </label>
-                                @for (s of statuses$ | async; track s){
-                                <input type="radio" [id]="s.id"
-                                name="statuses" [value]="s.id"
-                                [checked]="s.id === 1"
-                                [(ngModel)]="nestForm.statusId">
-                                <label for="statuses">{{s.type}}</label>
-                            }
-                        </div>
+                        
+                        
                         <!-- Submit Button -->
-                        <button 
+                        @if(nestForm.id){
+                            <button 
                             type="submit" 
-                            class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
+                            class="bg-yellow-600 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
                         >
-                            Add Beehive
+                            Detectie bewerken
                         </button>
+                        <button class="bg-yellow-600 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full" 
+                            (click)="deleteMarker()"
+                            >Detectie verwijderen</button>
+                        }
+                        @else {
+                            <button 
+                            type="submit" 
+                            class="bg-yellow-600 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
+                        >
+                            Detectie toevoegen
+                        </button>
+                        }
+                        
                     </form>
                 </div>
             </div>
         </div>
     }    
-    </div>
-  </div>
-  
+</div>
