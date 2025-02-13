@@ -40,7 +40,6 @@ export class MapComponent implements OnInit {
     this.screenWidth = window.innerWidth;
   }
 
-
   //Beehives
   beehives$: Observable<UserBeehive[]> = new Observable<UserBeehive[]>();
   beehive!: Beehive;
@@ -302,7 +301,6 @@ export class MapComponent implements OnInit {
       this.closeModal();
     });
   }
-  
 
   metersToPixelsAtZoom(meters: number, zoomLevel: number) {
     // Constants for Mapbox tile size and projection
@@ -316,7 +314,6 @@ export class MapComponent implements OnInit {
     // Convert meters to pixels
     return meters / metersPerPixel;
   }
-
 
   addGeoJsonLayer() {
     if (!this.map) {
@@ -348,8 +345,6 @@ export class MapComponent implements OnInit {
       type:'geojson',
       data: this.estimatedHornetJsonLocation
     });
-
-    console.log(this.hornetLocationCleared)
 
     this.map.addLayer({
       id: 'hornet-points-detected',

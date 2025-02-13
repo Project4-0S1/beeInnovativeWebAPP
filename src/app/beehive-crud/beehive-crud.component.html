@@ -67,7 +67,11 @@
                     }
                     </p>
                 <p class="mb-2 text-gray-900 dark:text-white text-2xl sm:text-base">Mac adres: <span class="italic">{{b.beehive.iotId}}</span></p>
-                <p class="mb-2 text-gray-900 dark:text-white text-2xl sm:text-base">Status: <span class="italic">Active</span></p>
+                <p class="mb-2 text-gray-900 dark:text-white text-2xl sm:text-base">Status: <span class="italic">
+                    @if(isOlderThan24Hours(b.beehive.lastCall)){Inactive}
+                    @else {Active}
+                    
+                </span></p>
                 <a [routerLink]="['/detections', b.beehiveId]">
                     <button class="bg-blue-600 hover:bg-blue-700 text-gray-100 font-semibold py-2 px-4 rounded shadow w-full text-2xl">
                         Detections

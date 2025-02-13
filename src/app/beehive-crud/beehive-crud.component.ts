@@ -200,4 +200,23 @@ export class BeehiveCrudComponent implements OnInit {
     this.EditingBeehiveId = 0;
     this.EditingBeehiveAngle = 0;
   }
+
+  isOlderThan24Hours(lastCall: string): boolean {
+    if (!lastCall) return false; // Handle null or undefined
+
+    const lastCallDate = new Date(lastCall); // Convert string to Date
+    const currentTime = new Date();
+
+    if(lastCallDate.getDate() == currentTime.getDate()){
+        return false;
+    }
+    else{
+      const differenceInHours = (currentTime.getTime() - lastCallDate.getTime()) / (1000 * 60 * 60);
+    
+      return differenceInHours > 24;
+
+    }
+  }
+
+
 }
