@@ -41,6 +41,7 @@ export class BeehiveFormComponent {
     longitude: '',
     userId: '',
     formIotDevice: '',
+    angle: '',
   };
 
   closeModal() {

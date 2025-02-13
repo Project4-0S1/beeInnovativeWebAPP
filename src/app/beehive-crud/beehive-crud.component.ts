@@ -130,6 +130,7 @@ export class BeehiveCrudComponent implements OnInit {
           switchMap((beehive) => {
             if(formData.name != ''){
               beehive.beehiveName = formData.name;
+              beehive.angle = formData.angle;
             }
             else{
               beehive.beehiveName = beehive.beehiveName
