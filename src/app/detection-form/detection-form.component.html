@@ -10,33 +10,33 @@
     <form (ngSubmit)="onSubmit()" #detectionForm="ngForm">
       <div class="mb-6">
         <label for="name" class="block mb-2 text-sm font-medium text-gray-900"
-          >Time between attacks (seconds)</label
+          >Tijd tussen aanvallen (seconden)</label
         >
         <input
           type="name"
           id="name"
           name="name"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          placeholder="Name"
+          placeholder="Tijd tussen aanvallen (seconden)"
           required
           [(ngModel)]="calculation.TimeBetween"
           #name="ngModel"
         />
         <div [hidden]="name.valid || name.pristine" class="text-red-500 mt-2">
-            Time between attacks is required
+          Tijd tussen aanvallen (seconden) is verplicht in te vullen
         </div>
       </div>
   
       <div class="mb-6">
         <label for="surname" class="block mb-2 text-sm font-medium text-gray-900"
-          >Direction (degrees)</label
+          >Richting (graden)</label
         >
         <input
           type="surname"
           id="surname"
           name="surname"
           class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          placeholder="surname"
+          placeholder="Richting (graden)"
           required
           [(ngModel)]="calculation.Direction"
           #surname="ngModel"
@@ -45,7 +45,7 @@
           [hidden]="surname.valid || surname.pristine"
           class="text-red-500 mt-2"
         >
-        Direction is required
+        Richting (graden) is verplicht
         </div>
       </div>
   
