@@ -1,46 +1,87 @@
-<div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">CRUD Table</h1>
-        <button 
-        (click)="openForm()"
-        class="px-4 py-2 bg-yellow-600 text-white font-semibold rounded-md shadow hover:bg-yellow-700    focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 ml-auto">
-          Add New Beehive
-        </button>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
-        @for(b of beehives$ | async; track $index){
-            <div class="max-w-sm mx-8 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 mb-20">
+    <div class="mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Jouw bijenkorven</h1>
+    </div>
+    <div class="flex flex-col justify-center items-start space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0 mb-6">
+        <div class="w-full">
+            <button 
+                (click)="openForm(true)"
+                class="w-full me-2 mb-4 px-4 py-2 bg-yellow-600 text-white font-semibold rounded-md shadow hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 lg:w-auto">
+                Voeg nieuwe bijenkorf toe
+            </button>
+            <button 
+                (click)="openForm(false)"
+                class="w-full mb-4 px-4 py-2 bg-yellow-600 text-white font-semibold rounded-md shadow hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 lg:w-auto">
+                Voeg een nieuwe bijenkorf toe met een mac-adres
+            </button>
+        </div>
+    </div>    
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 justify-center px-4">
+    @for(b of beehives$ | async; track $index){
+        <div class="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 w-full max-w-sm mx-auto">
+            <div class="relative inline-block w-full">           
                 <a class="flex justify-center" href="https://www.google.com/maps/place/{{b.beehive.latitude}},{{b.beehive.longitude}}">
-                    <img class="rounded-t-lg" [src]="snapshotUrls.get(b.beehiveId)" alt="" />
+                    <img class="rounded-t-lg w-full" [src]="snapshotUrls.get(b.beehiveId)" alt="Beehive Image" />
                 </a>
-                <div class="p-5">
-                    @if(EditingBeehiveId !== b.beehiveId)
-                    {
-                        <button (click)="startEditing(b.beehiveId)">
-                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{b.beehive.beehiveName}}</h5>
+                <button (click)="deleteConnection(b.id)">
+                    <img class="absolute top-2 right-2 w-8 h-8 cursor-pointer" src="assets/trashbin.svg" alt="Delete" />
+                </button>
+            </div>
+            <div class="p-5">
+                @if(EditingBeehiveId !== b.beehiveId)
+                {
+                    <div class="text-center">
+                        <button (click)="startEditing(b.beehiveId, true)" >
+                            <h5 class="mb-2 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-3xl">{{b.beehive.beehiveName}}</h5>
                         </button>
+                    </div>
+                }
+                @else {
+                    <input
+                    id="nameEdit_{{ b.beehiveId }}"
+                    type="text"
+                    [(ngModel)]="b.beehive.beehiveName"
+                    class="block w-full px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-gray-400 transition ease-in-out duration-300"
+                    required
+                    #beehive="ngModel"
+                    (keydown.enter)="saveChanges(b.beehive)"
+                    />
+                }
+                <p class="mb-2 text-gray-900 dark:text-white text-2xl sm:text-base">Angle: 
+                    @if(EditingBeehiveAngle !== b.beehiveId)
+                    {
+                            <button (click)="startEditing(b.beehiveId, false)" >
+                                <span class="italic">{{b.beehive.angle}}</span>
+                            </button>
                     }
                     @else {
                         <input
-                        id="nameEdit_{{ b.beehiveId }}"
+                        id="angleEdit__{{ b.beehiveId }}"
                         type="text"
-                        [(ngModel)]="b.beehive.beehiveName"
-                        class="form-select block w-full px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-gray-400 transition ease-in-out duration-300"
+                        [(ngModel)]="b.beehive.angle"
+                        class="block w-full px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:border-gray-400 transition ease-in-out duration-300"
                         required
                         #beehive="ngModel"
                         (keydown.enter)="saveChanges(b.beehive)"
-                      />
+                        />
                     }
-                    <p class="mb-2 tracking-tight text-gray-900 dark:text-white">Active</p>
-                    <a [routerLink]="['/detections', b.beehiveId]"><button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">Detections</button></a>
-                </div>
+                    </p>
+                <p class="mb-2 text-gray-900 dark:text-white text-2xl sm:text-base">Mac adres: <span class="italic">{{b.beehive.iotId}}</span></p>
+                <p class="mb-2 text-gray-900 dark:text-white text-2xl sm:text-base">Status: <span class="italic">Active</span></p>
+                <a [routerLink]="['/detections', b.beehiveId]">
+                    <button class="bg-blue-600 hover:bg-blue-700 text-gray-100 font-semibold py-2 px-4 rounded shadow w-full text-2xl">
+                        Detections
+                      </button>
+                    </a>
             </div>
-        }
+        </div>     
+    }
     </div>
 </div>
 
 <app-beehive-form 
     [isVisible]="isFormVisible" 
+    [isAddNew]="isAddNew"
     (close)="closeForm()"
     (submitForm)="handleFormSubmit($event)"
 ></app-beehive-form>

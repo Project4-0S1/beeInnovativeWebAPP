@@ -23,6 +23,10 @@ export class BeehiveService {
     return this.httpClient.get<Beehive>(`${this.ApiUrl}/${id}`);
   }
 
+  getBeehiveByIotId(id: string): Observable<Beehive> {
+    return this.httpClient.get<Beehive>(`${this.ApiUrl}/iot/${id}`);
+  }
+
   getFilteredBeehieves(filterByUserBeehives: boolean): Observable<Beehive[]> {
     let params = new HttpParams();
 
@@ -34,7 +38,7 @@ export class BeehiveService {
     return this.httpClient.get<Beehive[]>(this.ApiUrl, { params });
   }
 
-  putCategory(id:number, beehive: Beehive): Observable<Beehive> {
+  putBeehive(id:string, beehive: Beehive): Observable<Beehive> {
     let headers = new HttpHeaders();
     headers = headers.set('Content-Type', 'application/json; charset=utf-8');
     return this.httpClient.put<Beehive>(`${this.ApiUrl}/${id}`, beehive, {headers: headers});

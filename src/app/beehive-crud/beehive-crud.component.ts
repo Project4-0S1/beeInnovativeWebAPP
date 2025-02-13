@@ -6,11 +6,13 @@ import { UserBeehiveService } from '../services/user-beehive.service';
 import { BeehiveFormComponent } from '../beehive-form/beehive-form.component';
 import { BeehiveService } from '../services/beehive.service';
 import { Beehive } from '../interfaces/beehive';
-import { switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, take, tap } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { AuthService, User } from '@auth0/auth0-angular';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-beehive-crud',
@@ -23,15 +25,16 @@ export class BeehiveCrudComponent implements OnInit {
   beehives$: Observable<UserBeehive[]> = new Observable<UserBeehive[]>();
   currentBeehive: Observable<Beehive> = new Observable<Beehive>();
   newUserBeehive: Observable<UserBeehive> = new Observable<UserBeehive>();
+  user:Observable<User> = new Observable<User>;
 
   isFormVisible = false;
+  isAddNew = false;
   EditingBeehiveId = 0;
-
+  EditingBeehiveAngle = 0;
   
-  snapshotUrls: Map<number, string> = new Map();
-  
+  snapshotUrls: Map<number, string> = new Map();  
 
-  constructor(private ub: UserBeehiveService, private beehiveService: BeehiveService, private http: HttpClient) {}
+  constructor(private ub: UserBeehiveService, private beehiveService: BeehiveService, private http: HttpClient, public auth: AuthService, private users: UserService) {}
 
   ngOnInit(): void{
     this.beehives$ = this.ub.getAll();
@@ -43,8 +46,15 @@ export class BeehiveCrudComponent implements OnInit {
     });
   }
 
-  openForm() {
+  openForm(type: boolean) {
     this.isFormVisible = true;
+    
+    if(type){
+      this.isAddNew = true
+    }
+    else{
+      this.isAddNew = false
+    }
   }
 
   closeForm() {
@@ -87,58 +97,99 @@ export class BeehiveCrudComponent implements OnInit {
   }
 
   handleFormSubmit(formData: any) {
+    if(formData.formIotDevice == ''){
+      this.currentBeehive = this.beehiveService.getBeehiveById(formData.beehiveId);
+    }
     // Chain observables using switchMap
-    this.currentBeehive = this.beehiveService.getBeehiveById(formData.beehiveId);
+    else{
+      this.currentBeehive = this.beehiveService.getBeehiveByIotId(formData.formIotDevice);
+    }
+    
+    this.auth.user$
+    .pipe(
+      take(1), // Ensure we take only one value
+      switchMap((user) => {
+        if (!user || !user.sub) {
+          throw new Error('User not found');
+        }
 
-    this.currentBeehive
-      .pipe(
-        // Update the beehive
-        switchMap((beehive) => {
-          beehive.beehiveName = formData.name;
-          return this.beehiveService.putCategory(beehive.id, beehive).pipe(
-            tap((response) => console.log('Beehive updated successfully:', response)),
+        console.log("usertag" + user.sub)
 
-            // Emit a new UserBeehive object for the next step
-            switchMap(() =>
-              of({
-                beehiveId: formData.beehiveId,
-                userId: 1,
-              } as UserBeehive)
-            )
-          );
-        }),
+        // Fetch user from service (returns an Observable<User>)
+        return this.users.getBeehiveByIotId(user.sub!).pipe(
+          map((fetchedUser) => {
+            if (!fetchedUser || !fetchedUser['id']) {
+              throw new Error('Fetched user does not have an ID');
+            }
+            return fetchedUser['id']; // Extract user ID
+          })
+        );
+      }),
+      switchMap((userId) =>
+        this.currentBeehive.pipe(
+          switchMap((beehive) => {
+            if(formData.name != ''){
+              beehive.beehiveName = formData.name;
+            }
+            else{
+              beehive.beehiveName = beehive.beehiveName
+            }
 
-        // Post the new UserBeehive connection
-        switchMap((newUserBeehive) =>
-          this.ub.postNewUserConnection(newUserBeehive).pipe(
-            tap((response) =>
-              console.log('User successfully added:', response)
+            return this.beehiveService.putBeehive(beehive.iotId, beehive).pipe(
+              tap((response) =>
+                console.log('Beehive updated successfully:', response)
+              ),
+              switchMap(() =>
+                of({
+                  beehiveId: beehive.id,
+                  userId: userId, // Use the extracted user ID
+                } as UserBeehive)
+              )
+            );
+          }),
+          switchMap((newUserBeehive) =>
+            this.ub.postNewUserConnection(newUserBeehive).pipe(
+              tap((response) => console.log('User successfully added:', response))
             )
           )
         )
       )
-      .subscribe({
-        complete: () => {
-          console.log('All operations completed successfully.');
-          this.closeForm();
-          
-          window.location.reload();
-        },
-        error: (err) => console.error('An error occurred:', err),
-      });
-
-      
+    )
+    .subscribe({
+      complete: () => {
+        console.log('All operations completed successfully.');
+        this.closeForm();
+        this.ngOnInit();
+      },
+      error: (err) => console.error('An error occurred:', err),
+    });      
   }
 
-  startEditing(b: number) {
-    this.EditingBeehiveId = b;
+  startEditing(b: number, editType: Boolean) {
+    if(editType){
+      this.EditingBeehiveId = b;
+    }
+    else{
+      this.EditingBeehiveAngle = b
+    }
+  }
+
+  deleteConnection(id: number){
+    this.ub.deleteUserBeehiveConnection(id).subscribe({
+      complete: () => {
+        console.log("comeplete")
+      },
+      error: (err) => console.log('error', err)
+    });
+
+    this.ngOnInit();
   }
 
   saveChanges(beehive: Beehive) {
     delete beehive.hornetDetections;
     delete beehive.userBeehives;
 
-    this.beehiveService.putCategory(beehive.id, beehive).subscribe({
+    this.beehiveService.putBeehive(beehive.iotId, beehive).subscribe({
       complete: () => {
         console.log("comeplete")
       },
@@ -146,5 +197,6 @@ export class BeehiveCrudComponent implements OnInit {
     })
 
     this.EditingBeehiveId = 0;
+    this.EditingBeehiveAngle = 0;
   }
 }
