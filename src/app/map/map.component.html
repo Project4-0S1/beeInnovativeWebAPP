@@ -1,4 +1,47 @@
 <div class="fixed inset-0 flex flex-col">
+    <div id="legend" class="mt-16 md:mt-0 md:absolute md:top-20 md:right-4 bg-white p-4 rounded-lg shadow-md z-10">
+        <div class="flex justify-center">
+            @if (screenWidth >= 768) {
+
+            }
+            @else {
+                <button 
+                class="flex items-center"
+                (click)="isLegendOpen = !isLegendOpen"
+            >
+                <p class="me-2">Filter</p>
+                <img class="w-5 h-auto transition-transform duration-300 ease-in-out transform" [ngClass]="{'rotate-180': isLegendOpen, 'rotate-0': !isLegendOpen}" src="assets/Dropdown.svg" alt="Toggle Legend">
+            </button>
+            }
+            
+        </div>
+        @if(isLegendOpen || (screenWidth >= 768)){
+        <div class="space-y-4">
+            @for(f of filters; track $index){
+                <label class="flex items-center cursor-pointer space-x-4">
+                    <!-- Feature Icon -->
+                    <img [src]="f.icon" alt="{{f.name}}" class="w-6 h-6">
+                
+                    <!-- Feature Name -->
+                    <p class="text-sm font-medium text-gray-700">{{f.name}}</p>
+                
+                    <!-- Toggle Switch -->
+                    <div class="relative w-11 h-6">
+                        <input type="checkbox" value="" class="sr-only peer" (click)="onOffFilter(f)" [checked]="f.active">
+                        <div
+                            class="absolute inset-0 bg-gray-200 rounded-full peer-focus:ring-1 peer-focus:ring-yellow-500 dark:peer-focus:ring-yellow-800 
+                                    peer-checked:bg-yellow-600 dark:peer-checked:bg-yellow-600 transition"
+                        ></div>
+                        <div
+                            class="absolute top-[2px] left-[2px] w-5 h-5 bg-white border border-gray-300 rounded-full transition-all 
+                                    peer-checked:translate-x-full rtl:peer-checked:translate-x-0 dark:border-gray-600"
+                        ></div>
+                    </div>
+                </label>
+            }
+        </div>
+        }
+    </div>
     <div id="map" class="flex-1 border border-gray-300" style="width: 100%; height: 100%;"></div>
 
     @if(formIsVisible){

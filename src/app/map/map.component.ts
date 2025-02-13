@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { FeatureCollection, GeoJSON } from 'geojson';
 import { Beehive } from '../interfaces/beehive';
-import { Observable, switchMap, tap } from 'rxjs';
+import { filter, Observable, switchMap, tap } from 'rxjs';
 import { BeehiveService } from '../services/beehive.service';
 import { CommonModule } from '@angular/common';
 import { Nestlocations } from '../interfaces/nestlocations';
@@ -32,6 +32,13 @@ export class MapComponent implements OnInit {
   lng: number = 4.961886810019829;
   selectedMarker: mapboxgl.Marker | null = null;
 
+  isLegendOpen: boolean = false;
+  screenWidth: number = window.innerWidth;
+
+  @HostListener('window:resize', [])
+  onResize() {
+    this.screenWidth = window.innerWidth;
+  }
 
   //Beehives
   beehives$: Observable<UserBeehive[]> = new Observable<UserBeehive[]>();
@@ -42,6 +49,13 @@ export class MapComponent implements OnInit {
 
   estimatedNestlocations$: Observable<EstimatedNestLocations[]> = new Observable<EstimatedNestLocations[]>();
   nestlocations$: Observable<Nestlocations[]> = new Observable<Nestlocations[]>();
+
+  filters = [
+    {name: 'Bijenkorven', icon: 'assets/beehivesmaller.svg', active: true, layerId: "location-points"},
+    {name: 'Detecties', icon: 'assets/MapMarkerHornet.svg', active: true, layerId: "hornet-points-detected"},
+    {name: 'Gevonden Nesten', icon: 'assets/hornetnestFound.svg', active: true, layerId: "hornet-points-found"},
+    {name: 'Verwijderde Nesten', icon: 'assets/hornetCleared.svg', active: true, layerId: "hornet-points-cleared"},
+  ];
 
   beehiveJsonData: FeatureCollection = {
     type: 'FeatureCollection',
@@ -72,7 +86,7 @@ export class MapComponent implements OnInit {
   formId: number = 0;
   nestForm: Nestlocations = {id: 0, statusId: 0, latitude: 0, longitude: 0}
 
-  constructor(private beehiveService: BeehiveService, private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService, private statusService: StatusService, private userBeehiveService: UserBeehiveService) {}
+  constructor(private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService, private statusService: StatusService, private userBeehiveService: UserBeehiveService) {}
   
   ngOnInit(): void {
     this.beehives$ = this.userBeehiveService.getAll();
@@ -223,6 +237,24 @@ export class MapComponent implements OnInit {
     });
   }
 
+  onOffFilter(fil: any){
+    // Toggle the active state
+    fil.active = !fil.active;
+
+    // Update the map visibility based on active state
+    if (this.map) {
+        this.map.setLayoutProperty(fil.layerId, 'visibility', fil.active ? 'visible' : 'none');
+    }
+
+    // Find the index of the filter
+    const filterIndex = this.filters.findIndex(f => f.name === fil.name);
+
+    // Update the filter in the array if found
+    if (filterIndex !== -1) {
+        this.filters[filterIndex].active = fil.active;
+    }
+  }
+
   onSubmit() {
     if(this.formId != 0){
       this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).pipe(
@@ -269,7 +301,6 @@ export class MapComponent implements OnInit {
       this.closeModal();
     });
   }
-  
 
   metersToPixelsAtZoom(meters: number, zoomLevel: number) {
     // Constants for Mapbox tile size and projection
@@ -283,7 +314,6 @@ export class MapComponent implements OnInit {
     // Convert meters to pixels
     return meters / metersPerPixel;
   }
-
 
   addGeoJsonLayer() {
     if (!this.map) {
@@ -316,8 +346,6 @@ export class MapComponent implements OnInit {
       data: this.estimatedHornetJsonLocation
     });
 
-    console.log(this.hornetLocationCleared)
-
     this.map.addLayer({
       id: 'hornet-points-detected',
       type: 'circle',
@@ -344,7 +372,7 @@ export class MapComponent implements OnInit {
           22, this.metersToPixelsAtZoom(100, 22),
         ],
         'circle-color': '#da2828', 
-        'circle-opacity': 0.6 
+        'circle-opacity': 0.6,
       }
     });
 
@@ -411,6 +439,7 @@ export class MapComponent implements OnInit {
         'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
         'text-size': 16,
         'text-offset': [0, -4],
+        'visibility': 'visible'
       },
       paint: {
         'text-color': '#855a01',  // Set text color

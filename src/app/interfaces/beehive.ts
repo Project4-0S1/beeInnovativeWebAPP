@@ -7,7 +7,7 @@ export interface Beehive {
     longitude: number;
     angle: number;
     iotId: string;
-    lastCall: Date;
+    lastCall: string;
     hornetDetections?: any; // Optional field for cases where it's null or unknown
     userBeehives?: UserBeehive; // Optional field for cases where it's null or unknown
   }
