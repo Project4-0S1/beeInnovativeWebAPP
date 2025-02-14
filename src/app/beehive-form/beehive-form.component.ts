@@ -58,4 +58,8 @@ export class BeehiveFormComponent {
     this.submitForm.emit(this.formData); // Emit the form data to the parent component
     this.closeModal(); // Close the modal after submission
   }
+
+  refresh(){
+    this.beehives$ = this.b.getFilteredBeehieves(true);
+  }
 }

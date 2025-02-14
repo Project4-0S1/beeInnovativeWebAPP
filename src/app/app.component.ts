@@ -11,7 +11,6 @@ import { FooterComponent } from './footer/footer.component';
     RouterOutlet,
     CommonModule,
     NavbarComponent,
-    FooterComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
