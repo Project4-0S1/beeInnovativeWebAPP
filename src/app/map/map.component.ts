@@ -112,7 +112,6 @@ export class MapComponent implements OnInit {
     
     this.nestlocations$.forEach((locations: Nestlocations[]) => {
       locations.forEach(location => {
-        if(this.checkWithinRadius(this.beehives$, location)){
           if(location.statusId == 1){
             this.hornetLocationDetected.features.push({
               type: 'Feature',
@@ -149,8 +148,7 @@ export class MapComponent implements OnInit {
               }
             });
           }
-        }        
-      });
+        });
     });
     
     this.estimatedNestlocations$.forEach((locations: EstimatedNestLocations[]) => {
@@ -548,37 +546,37 @@ export class MapComponent implements OnInit {
     });
   }
 
-  checkWithinRadius(beehives$: Observable<UserBeehive[]>, location: Nestlocations): boolean {
-    let isWithin = false; // Track if any beehive is within the radius
+//   checkWithinRadius(beehives$: Observable<UserBeehive[]>, location: Nestlocations): boolean {
+//     let isWithin = false; // Track if any beehive is within the radius
 
-    beehives$.subscribe(beehives => {
-        for (const bh of beehives) {
-            const R = 6371; // Earth's radius in km
-            const dLat = this.toRad(location.latitude - bh.beehive.latitude);
-            const dLng = this.toRad(location.longitude - bh.beehive.longitude);
+//     beehives$.subscribe(beehives => {
+//         for (const bh of beehives) {
+//             const R = 6371; // Earth's radius in km
+//             const dLat = this.toRad(location.latitude - bh.beehive.latitude);
+//             const dLng = this.toRad(location.longitude - bh.beehive.longitude);
 
-            const a = 
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(this.toRad(bh.beehive.latitude)) * Math.cos(this.toRad(location.latitude)) *
-                Math.sin(dLng / 2) * Math.sin(dLng / 2);
+//             const a = 
+//                 Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//                 Math.cos(this.toRad(bh.beehive.latitude)) * Math.cos(this.toRad(location.latitude)) *
+//                 Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            const distance = R * c; // Distance in km
+//             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//             const distance = R * c; // Distance in km
 
-            console.log(`Distance between Beehive(${bh.beehive.latitude}, ${bh.beehive.longitude}) and Nest(${location.latitude}, ${location.longitude}): ${distance} km`);
+//             console.log(`Distance between Beehive(${bh.beehive.latitude}, ${bh.beehive.longitude}) and Nest(${location.latitude}, ${location.longitude}): ${distance} km`);
 
-            if (distance <= 5) {
-                isWithin = true; // If any beehive is within the radius, set to true
-                break; // No need to check further
-            }
-        }
-    });
+//             if (distance <= 5) {
+//                 isWithin = true; // If any beehive is within the radius, set to true
+//                 break; // No need to check further
+//             }
+//         }
+//     });
 
-    return isWithin;
-}
+//     return isWithin;
+// }
 
-  toRad(deg: number): number {
-    return deg * (Math.PI / 180);
-  }
+//   toRad(deg: number): number {
+//     return deg * (Math.PI / 180);
+//   }
 
 }
