@@ -11,7 +11,7 @@ import { fakeAsync } from '@angular/core/testing';
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './beehive-form.component.html',
-  styleUrls: ['./beehive-form.component.css']
+  styleUrl: './beehive-form.component.css'
 })
 export class BeehiveFormComponent {
 
