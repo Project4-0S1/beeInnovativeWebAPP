@@ -30,7 +30,7 @@
                         <input type="checkbox" value="" class="sr-only peer" (click)="onOffFilter(f)" [checked]="f.active">
                         <div
                             class="absolute inset-0 bg-gray-200 rounded-full peer-focus:ring-1 peer-focus:ring-yellow-500 dark:peer-focus:ring-yellow-800 
-                                    peer-checked:bg-yellow-600 dark:peer-checked:bg-yellow-600 transition"
+                                    peer-checked:bg-yellow-500 dark:peer-checked:bg-yellow-500 transition"
                         ></div>
                         <div
                             class="absolute top-[2px] left-[2px] w-5 h-5 bg-white border border-gray-300 rounded-full transition-all 
@@ -58,7 +58,7 @@
                     <h2 class="text-lg font-bold mb-4 text-gray-900">Nieuwe hoorenaarnest toevoegen</h2>
                 }
                 <div>
-                    <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 mb-4" 
+                    <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 mb-4" 
                     (click)="openEditMode()"
                     >Nieuwe Locatie Aanduiden</button>
                     
@@ -134,18 +134,18 @@
                         @if(nestForm.id){
                             <button 
                             type="submit" 
-                            class="bg-yellow-600 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
+                            class="bg-yellow-500 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
                         >
                             Detectie bewerken
                         </button>
-                        <button class="bg-yellow-600 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full" 
+                        <button class="bg-yellow-500 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full" 
                             (click)="deleteMarker()"
                             >Detectie verwijderen</button>
                         }
                         @else {
                             <button 
                             type="submit" 
-                            class="bg-yellow-600 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
+                            class="bg-yellow-500 text-white mb-2 px-4 py-2 rounded-lg hover:bg-yellow-700 w-full"
                         >
                             Detectie toevoegen
                         </button>
