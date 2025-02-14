@@ -425,35 +425,35 @@ export class MapComponent implements OnInit {
       }
     });
     
-    this.map.addLayer({
-      id: 'estimated-hornet-points',
-      type: 'circle',
-      source: 'EstimatedHornetLocations',
-      paint: {
-        'circle-radius': [
-          'interpolate',
-          ['linear'],
-          ['zoom'],
-          8, this.metersToPixelsAtZoom(100, 8),
-          9, this.metersToPixelsAtZoom(100, 9),
-          10, this.metersToPixelsAtZoom(100, 10),
-          11, this.metersToPixelsAtZoom(100, 11),
-          12, this.metersToPixelsAtZoom(100, 12),
-          13, this.metersToPixelsAtZoom(100, 13),
-          14, this.metersToPixelsAtZoom(100, 14),
-          15, this.metersToPixelsAtZoom(100, 15),
-          16, this.metersToPixelsAtZoom(100, 16),
-          17, this.metersToPixelsAtZoom(100, 17),
-          18, this.metersToPixelsAtZoom(100, 18),
-          19, this.metersToPixelsAtZoom(100, 19),
-          20, this.metersToPixelsAtZoom(100, 20),
-          21, this.metersToPixelsAtZoom(100, 21),
-          22, this.metersToPixelsAtZoom(100, 22),
-        ],
-        'circle-color': '#3b10c7', 
-        'circle-opacity': 0.6 
-      }
-    });
+    // this.map.addLayer({
+    //   id: 'estimated-hornet-points',
+    //   type: 'circle',
+    //   source: 'EstimatedHornetLocations',
+    //   paint: {
+    //     'circle-radius': [
+    //       'interpolate',
+    //       ['linear'],
+    //       ['zoom'],
+    //       8, this.metersToPixelsAtZoom(100, 8),
+    //       9, this.metersToPixelsAtZoom(100, 9),
+    //       10, this.metersToPixelsAtZoom(100, 10),
+    //       11, this.metersToPixelsAtZoom(100, 11),
+    //       12, this.metersToPixelsAtZoom(100, 12),
+    //       13, this.metersToPixelsAtZoom(100, 13),
+    //       14, this.metersToPixelsAtZoom(100, 14),
+    //       15, this.metersToPixelsAtZoom(100, 15),
+    //       16, this.metersToPixelsAtZoom(100, 16),
+    //       17, this.metersToPixelsAtZoom(100, 17),
+    //       18, this.metersToPixelsAtZoom(100, 18),
+    //       19, this.metersToPixelsAtZoom(100, 19),
+    //       20, this.metersToPixelsAtZoom(100, 20),
+    //       21, this.metersToPixelsAtZoom(100, 21),
+    //       22, this.metersToPixelsAtZoom(100, 22),
+    //     ],
+    //     'circle-color': '#3b10c7', 
+    //     'circle-opacity': 0.6 
+    //   }
+    // });
 
     // Add a layer to display the points
     this.map.addLayer({

@@ -1,3 +1,4 @@
+// Import necessary modules and components
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -22,23 +23,30 @@ import { UserService } from '../services/user.service';
   styleUrl: './beehive-crud.component.css'
 })
 export class BeehiveCrudComponent implements OnInit {
+  // Define observables for beehives, current beehive, new user beehive, and user
   beehives$: Observable<UserBeehive[]> = new Observable<UserBeehive[]>();
   currentBeehive: Observable<Beehive> = new Observable<Beehive>();
   newUserBeehive: Observable<UserBeehive> = new Observable<UserBeehive>();
   user:Observable<User> = new Observable<User>;
 
+  // Define flags for form visibility and add new beehive
   isFormVisible = false;
   isAddNew = false;
   EditingBeehiveId = 0;
   EditingBeehiveAngle = 0;
   
+  // Define a map to store snapshot URLs for beehives
   snapshotUrls: Map<number, string> = new Map();  
 
+  // Constructor to inject necessary services
   constructor(private ub: UserBeehiveService, private beehiveService: BeehiveService, private http: HttpClient, public auth: AuthService, private users: UserService) {}
 
+  // Initialize the component
   ngOnInit(): void{
+    // Get all beehives from the UserBeehiveService
     this.beehives$ = this.ub.getAll();
 
+    // Subscribe to the beehives observable and capture snapshots for each beehive
     this.beehives$.subscribe(beehives => {
       beehives.forEach(beehive => {
         this.captureSnapshot(beehive.beehiveId, beehive.beehive.latitude, beehive.beehive.longitude);
@@ -46,9 +54,11 @@ export class BeehiveCrudComponent implements OnInit {
     });
   }
 
+  // Open the form for adding or editing a beehive
   openForm(type: boolean) {
     this.isFormVisible = true;
     
+    // Set the add new flag based on the type
     if(type){
       this.isAddNew = true
     }
@@ -57,17 +67,20 @@ export class BeehiveCrudComponent implements OnInit {
     }
   }
 
+  // Close the form
   closeForm() {
     this.isFormVisible = false; 
   }
 
-
+  // Capture a snapshot for a beehive
   captureSnapshot(beehiveId: number, latitude: number, longitude: number) {
+    // Define the width, height, and zoom for the snapshot
     const width = 200;
     const height = 200;
     const mapboxToken = environment.mapbox.accessToken;
     const zoom = 12;
 
+    // Create a GeoJSON object for the beehive location
     const geojson = {
       type: 'FeatureCollection',
       features: [
@@ -96,6 +109,7 @@ export class BeehiveCrudComponent implements OnInit {
     this.snapshotUrls.set(beehiveId, url);  
   }
 
+  // Handle form submission
   handleFormSubmit(formData: any) {
     if(formData.formIotDevice == ''){
       this.currentBeehive = this.beehiveService.getBeehiveById(formData.beehiveId);
@@ -105,6 +119,7 @@ export class BeehiveCrudComponent implements OnInit {
       this.currentBeehive = this.beehiveService.getBeehiveByIotId(formData.formIotDevice);
     }
     
+    // Chain observables to update the beehive and add a new user connection
     this.auth.user$
     .pipe(
       take(1), // Ensure we take only one value
@@ -112,8 +127,6 @@ export class BeehiveCrudComponent implements OnInit {
         if (!user || !user.sub) {
           throw new Error('User not found');
         }
-
-        console.log("usertag" + user.sub)
 
         // Fetch user from service (returns an Observable<User>)
         return this.users.getBeehiveByIotId(user.sub!).pipe(
@@ -135,7 +148,7 @@ export class BeehiveCrudComponent implements OnInit {
             else{
               beehive.beehiveName = beehive.beehiveName
             }
-
+            // Update the beehive using the BeehiveService
             return this.beehiveService.putBeehive(beehive.iotId, beehive).pipe(
               tap((response) =>
                 console.log('Beehive updated successfully:', response)
@@ -165,7 +178,7 @@ export class BeehiveCrudComponent implements OnInit {
       error: (err) => console.error('An error occurred:', err),
     });      
   }
-
+  // Start editing a beehive
   startEditing(b: number, editType: Boolean) {
     if(editType){
       this.EditingBeehiveId = b;
@@ -174,7 +187,7 @@ export class BeehiveCrudComponent implements OnInit {
       this.EditingBeehiveAngle = b
     }
   }
-
+  // Delete a user beehive connection
   deleteConnection(id: number){
     this.ub.deleteUserBeehiveConnection(id).subscribe({
       complete: () => {
@@ -186,6 +199,7 @@ export class BeehiveCrudComponent implements OnInit {
     this.ngOnInit();
   }
 
+  // Save changes to a beehive
   saveChanges(beehive: Beehive) {
     delete beehive.hornetDetections;
     delete beehive.userBeehives;
@@ -201,6 +215,7 @@ export class BeehiveCrudComponent implements OnInit {
     this.EditingBeehiveAngle = 0;
   }
 
+  // Check if a date is older than 24 hours
   isOlderThan24Hours(lastCall: string): boolean {
     if (!lastCall) return false; // Handle null or undefined
 
