@@ -4,9 +4,30 @@ Web APP: https://beeinnovative.netlify.app/
 <br>
 API: https://beeinnovative.azurewebsites.net/api/
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.0.
+## Content
 
-## Development server
+Our Angular application is build up with components. Each component is responsible for a specific part of the application. Below is a list of the components:
+
+- Beehive-crud
+- Beehive-form
+- Detection-crud
+- Detections (list of detections)
+- Footer (at the end decided not to use it)
+- Interfaces (Where the models are stored)
+- Login, logout, sign-up buttons (for usage of authentication)
+- Map (Our home page)
+- Navbar
+- Services (our services to make API requests, for more information you can look at the API code)
+
+## Authentication
+
+We use auth0 for authentication. This is easy set up throught to information provided in the Angular classes.
+
+Most important files are the auth.guard.ts file that prevents unauthorized users to visit our website. And app.config.ts file that is used to configure the auth0 settings.
+
+## Angular Development server
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.0.
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
