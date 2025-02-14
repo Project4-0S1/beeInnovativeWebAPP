@@ -26,19 +26,33 @@ import { UserBeehive } from '../interfaces/user-beehive';
 })
 export class MapComponent implements OnInit {
 
+  //imports for the Map
   map: mapboxgl.Map | undefined; 
-  style = 'mapbox://styles/jorrit-geurts/cm66hjbon00f001s7cuxpft2p';
+  style = 'mapbox://styles/jorrit-geurts/cm66hjbon00f001s7cuxpft2p'; //Style link of the map
+
+  //Start Coordinates
   lat: number = 51.16190723486903;
   lng: number = 4.961886810019829;
-  selectedMarker: mapboxgl.Marker | null = null;
 
+  selectedMarker: mapboxgl.Marker | null = null; // variable for changing the markers
+
+  //Settings for legend
   isLegendOpen: boolean = false;
   screenWidth: number = window.innerWidth;
 
+  //Host listener, needed for triggering a function for the filter to change the style of the legend
   @HostListener('window:resize', [])
   onResize() {
     this.screenWidth = window.innerWidth;
   }
+
+  //Array for the different filters. With their: names, icon url, it's activitiy, it's layerId
+  filters = [
+    {name: 'Bijenkorven', icon: 'assets/beehivesmaller.svg', active: true, layerId: "location-points"},
+    {name: 'Detecties', icon: 'assets/MapMarkerHornet.svg', active: true, layerId: "hornet-points-detected"},
+    {name: 'Gevonden Nesten', icon: 'assets/hornetnestFound.svg', active: true, layerId: "hornet-points-found"},
+    {name: 'Verwijderde Nesten', icon: 'assets/hornetCleared.svg', active: true, layerId: "hornet-points-cleared"},
+  ];
 
   //Beehives
   beehives$: Observable<UserBeehive[]> = new Observable<UserBeehive[]>();
@@ -47,16 +61,11 @@ export class MapComponent implements OnInit {
   //Statuses
   statuses$: Observable<Status[]> = new Observable<Status[]>();
 
+  //estimatedLocations
   estimatedNestlocations$: Observable<EstimatedNestLocations[]> = new Observable<EstimatedNestLocations[]>();
   nestlocations$: Observable<Nestlocations[]> = new Observable<Nestlocations[]>();
 
-  filters = [
-    {name: 'Bijenkorven', icon: 'assets/beehivesmaller.svg', active: true, layerId: "location-points"},
-    {name: 'Detecties', icon: 'assets/MapMarkerHornet.svg', active: true, layerId: "hornet-points-detected"},
-    {name: 'Gevonden Nesten', icon: 'assets/hornetnestFound.svg', active: true, layerId: "hornet-points-found"},
-    {name: 'Verwijderde Nesten', icon: 'assets/hornetCleared.svg', active: true, layerId: "hornet-points-cleared"},
-  ];
-
+  //The feature collections, the locations will be added in hare later in the code
   beehiveJsonData: FeatureCollection = {
     type: 'FeatureCollection',
     features: []
@@ -82,49 +91,55 @@ export class MapComponent implements OnInit {
     features: []
   };
 
-  formIsVisible = false;
+  //Variables for the form of updating or adding a nest location
+  formIsVisible = false; //Boolean if the form is visible or not
   formId: number = 0;
   nestForm: Nestlocations = {id: 0, statusId: 0, latitude: 0, longitude: 0}
 
+  //The Constructor
   constructor(private nestLocationService: NestlocationService, private estimatedNestLocationService: EstimatedNestLocationService, private statusService: StatusService, private userBeehiveService: UserBeehiveService) {}
   
+  //The innitial load
   ngOnInit(): void {
-    this.beehives$ = this.userBeehiveService.getAll();
+    
+    //Requesting the necessary data from the API
+    this.beehives$ = this.userBeehiveService.getAll(); //You get all the beehives via UserBeehive. So you only get the beehives from a specific user
     this.estimatedNestlocations$ = this.estimatedNestLocationService.getAllNests();
     this.nestlocations$ = this.nestLocationService.getAllNests();
-
     this.statuses$ = this.statusService.getAllStatuses();
 
+    //Adding the beehives into feature collection
     this.beehives$.subscribe((locations: UserBeehive[]) => {
       locations.forEach(location => {
         this.beehiveJsonData.features.push({
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [location.beehive.longitude, location.beehive.latitude]
+            coordinates: [location.beehive.longitude, location.beehive.latitude] //adding the coordinates
           },
           properties: {
-            title: location.beehive.beehiveName
+            title: location.beehive.beehiveName //Adding the beehive name, needed for the 
           }
         });
       });
     });
     
+    //A foreach for checking all the nestlocations
     this.nestlocations$.forEach((locations: Nestlocations[]) => {
       locations.forEach(location => {
-          if(location.statusId == 1){
+          if(location.statusId == 1){ //It checks if the statusId is equal to the detected status and adds it into the detected feature collection
             this.hornetLocationDetected.features.push({
               type: 'Feature',
               geometry: {
                 type: 'Point',
-                coordinates: [location.longitude, location.latitude]
+                coordinates: [location.longitude, location.latitude] //Adding the coordinates into the feature collection
               },
               properties: {
-                id: location.id
+                id: location.id //Adding the id into the collection, needed for the form
               }
             });
           }
-          else if(location.statusId == 2){
+          else if(location.statusId == 2){ //It checks if the statusId is equal to the found status and adds it into the found feature collection
             this.hornetLocationFound.features.push({
               type: 'Feature',
               geometry: {
@@ -136,7 +151,7 @@ export class MapComponent implements OnInit {
               }
             });
           }
-          else if(location.statusId == 3){
+          else if(location.statusId == 3){ //It checks if the statusId is equal to the removed status and adds it into the removed feature collection
             this.hornetLocationCleared.features.push({
               type: 'Feature',
               geometry: {
@@ -151,13 +166,14 @@ export class MapComponent implements OnInit {
         });
     });
     
+    //For each loop for the estimated locations, the estimated locations are needed for the calculations but not for displaying information
     this.estimatedNestlocations$.forEach((locations: EstimatedNestLocations[]) => {
       locations.forEach(location => {
-        this.estimatedHornetJsonLocation.features.push({
+        this.estimatedHornetJsonLocation.features.push({ //It adds the estimated locations into the feature collection
           type: 'Feature',
           geometry: {
             type: 'Point',
-            coordinates: [location.estimatedLongitude, location.estimatedLatitude]
+            coordinates: [location.estimatedLongitude, location.estimatedLatitude] //Coordinates are added to the feature collection
           },
           properties: {
             title: ''
@@ -166,30 +182,34 @@ export class MapComponent implements OnInit {
       });
     });
 
+    //Setup for the map
     this.map = new mapboxgl.Map({
-      accessToken: environment.mapbox.accessToken,
-      container: 'map',
-      style: this.style,
-      zoom: 13,
-      center: [this.lng, this.lat],
-      interactive: true,
+      accessToken: environment.mapbox.accessToken, //Secret access token for accessing the correct account
+      container: 'map', //the tag used in the HTML to get and display the map
+      style: this.style, //setup the style we defined earlier
+      zoom: 13, //the zoomlevel when loading the map
+      center: [this.lng, this.lat], //the coordinates of the map when loading in
+      interactive: true, //setup that the map is interactive
     });
 
+    //A function that triggers all needed function when the map loads
     this.map.on('load', () => {
-      this.addGeoJsonLayer();
+      this.addGeoJsonLayer(); // Starting the fucnction for adding the layers
     });
 
+    // A function that triggers when clicked
     this.map?.on('click', (event) => {
       // Query rendered features at the click location for multiple layers
       const layers = ['hornet-points-found', 'hornet-points-detected', 'hornet-points-cleared'];
       const features = this.map?.queryRenderedFeatures(event.point, { layers });
     
+      // checks if clicked on one of the features
       if (features && features.length > 0) {
-        const clickedFeature = features[0];
+        const clickedFeature = features[0]; // gets the clicked feature id
 
-        this.formIsVisible = true;
+        this.formIsVisible = true; //opens form for adding/editing
     
-        // Check the layer ID to determine the action
+        // Check the layer ID to determine the action, checks which layer has been clicked
         switch (clickedFeature.layer!.id) {
           case 'hornet-points-found':
             this.formId = clickedFeature.properties!['id'];
@@ -198,8 +218,8 @@ export class MapComponent implements OnInit {
               if (!selectedNest) {
                 console.error(`Nest with ID ${this.formId} not found`);
               } else {
-                this.nestForm = selectedNest;
-                this.nestForm.id = selectedNest.id;
+                this.nestForm = selectedNest; //Sets the form
+                this.nestForm.id = selectedNest.id; //Sets the Id for the form
               }            
             });
             break;
@@ -232,11 +252,12 @@ export class MapComponent implements OnInit {
         }
       }
       else{
-        this.addPinpointMarker(event.lngLat.lng, event.lngLat.lat);
+        this.addPinpointMarker(event.lngLat.lng, event.lngLat.lat); //Starting function to add a new marker on the map
       }
     });
   }
 
+  //Filter toggle function
   onOffFilter(fil: any){
     // Toggle the active state
     fil.active = !fil.active;
@@ -255,13 +276,14 @@ export class MapComponent implements OnInit {
     }
   }
 
+  // Submit form function
   onSubmit() {
-    if(this.formId != 0){
+    if(this.formId != 0){ //Checks if need to add or edit data
       this.nestLocationService.putStatus(this.nestForm.id, this.nestForm).pipe(
         switchMap(() => this.updateGeoJsonData()), // Waits for updateGeoJsonData() to complete
       ).subscribe(() => {
-        this.removeLayers();
-        this.closeModal();
+        this.removeLayers(); // Removes the layers 
+        this.closeModal(); //Closes the modal and adds the layers again
       });
     }
     else {
@@ -273,19 +295,22 @@ export class MapComponent implements OnInit {
       });
     }
   }
-  
+
+  //Open edit mode, for placing an new marker
   openEditMode(){
-    this.removeLayers();
-    this.formIsVisible = false;
+    this.removeLayers(); // Same function, to remove the layers
+    this.formIsVisible = false; //Adding/Edit form not visible anymore
   }
 
+  //Closes the edit form
   closeModal() {
-    this.nestForm = {id: 0, statusId: 0, latitude: 0, longitude: 0};
-    this.formId = 0;
-    this.formIsVisible = false;
-    this.addGeoJsonLayer();
+    this.nestForm = {id: 0, statusId: 0, latitude: 0, longitude: 0}; //Form data placed to base data
+    this.formId = 0; //Id placed to base data
+    this.formIsVisible = false; //Form placed to invisible
+    this.addGeoJsonLayer(); //Adding the layers again with the new data
   }
 
+  //Placing or editing the marker location
   addPinpointMarker(lng: number, lat: number) {
     // Update form with new coordinates
     this.nestForm.latitude = lat;
@@ -293,15 +318,17 @@ export class MapComponent implements OnInit {
     this.formIsVisible = true;
   }
 
+  // Delete function for the marker
   deleteMarker(){
     this.nestLocationService.deleteNestLocation(this.formId).pipe(
       switchMap(() => this.updateGeoJsonData()), // Waits for updateGeoJsonData() to complete
     ).subscribe(() => {
-      this.removeLayers();
-      this.closeModal();
+      this.removeLayers(); //Function for remove layers
+      this.closeModal(); //Closes the modal
     });
   }
 
+  //Calculates the distance based on the map location and earth radius
   metersToPixelsAtZoom(meters: number, zoomLevel: number) {
     // Constants for Mapbox tile size and projection
     const TILE_SIZE = 512; // Mapbox default tile size
@@ -315,8 +342,9 @@ export class MapComponent implements OnInit {
     return meters / metersPerPixel;
   }
 
+  //Adding the layers
   addGeoJsonLayer() {
-    if (!this.map) {
+    if (!this.map) { //Checks if the map exists
       return;
     }
 
@@ -346,6 +374,7 @@ export class MapComponent implements OnInit {
       data: this.estimatedHornetJsonLocation
     });
 
+    //Adding the layer layout
     this.map.addLayer({
       id: 'hornet-points-detected',
       type: 'circle',
@@ -449,6 +478,7 @@ export class MapComponent implements OnInit {
     }); 
   }
 
+  //Updating the data
   updateGeoJsonData(): Observable<void> {
     return new Observable(observer => {
       // Reset GeoJSON objects to avoid duplicates
@@ -510,10 +540,12 @@ export class MapComponent implements OnInit {
     });
   }
   
-
+  // Remove layers
   removeLayers() {
+    //Checks if the map exists
     if (!this.map) return;
   
+    //List of all the layers
     const layersToRemove = [
       'hornet-points-detected',
       'hornet-points-found',
@@ -522,6 +554,7 @@ export class MapComponent implements OnInit {
       'location-points'
     ];
   
+    //List of all the sources
     const sourcesToRemove = [
       'HornetLocationsDetected',
       'HornetLocationsFound',
@@ -545,38 +578,4 @@ export class MapComponent implements OnInit {
       }
     });
   }
-
-//   checkWithinRadius(beehives$: Observable<UserBeehive[]>, location: Nestlocations): boolean {
-//     let isWithin = false; // Track if any beehive is within the radius
-
-//     beehives$.subscribe(beehives => {
-//         for (const bh of beehives) {
-//             const R = 6371; // Earth's radius in km
-//             const dLat = this.toRad(location.latitude - bh.beehive.latitude);
-//             const dLng = this.toRad(location.longitude - bh.beehive.longitude);
-
-//             const a = 
-//                 Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//                 Math.cos(this.toRad(bh.beehive.latitude)) * Math.cos(this.toRad(location.latitude)) *
-//                 Math.sin(dLng / 2) * Math.sin(dLng / 2);
-
-//             const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//             const distance = R * c; // Distance in km
-
-//             console.log(`Distance between Beehive(${bh.beehive.latitude}, ${bh.beehive.longitude}) and Nest(${location.latitude}, ${location.longitude}): ${distance} km`);
-
-//             if (distance <= 5) {
-//                 isWithin = true; // If any beehive is within the radius, set to true
-//                 break; // No need to check further
-//             }
-//         }
-//     });
-
-//     return isWithin;
-// }
-
-//   toRad(deg: number): number {
-//     return deg * (Math.PI / 180);
-//   }
-
 }

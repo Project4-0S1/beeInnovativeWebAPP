@@ -24,7 +24,6 @@ export class BeehiveFormComponent {
 
   formBeehive$: Observable<Beehive> = new Observable<Beehive>();
 
-
   constructor(private b: BeehiveService) {
   
   }
@@ -51,5 +50,9 @@ export class BeehiveFormComponent {
   onSubmit() {
     this.submitForm.emit(this.formData);
     this.closeModal();
+  }
+
+  refresh(){
+    this.beehives$ = this.b.getFilteredBeehieves(true);
   }
 }
