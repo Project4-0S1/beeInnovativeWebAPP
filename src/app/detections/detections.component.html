@@ -23,6 +23,7 @@
             <th class="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase tracking-wider">#</th>
             <th class="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase tracking-wider">Tijd</th>
             <th class="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase tracking-wider">Richting (Hoek)</th>
+            <th class="px-4 py-3 text-xs font-medium text-left text-gray-500 uppercase tracking-wider">Kleur</th>
             <th class="px-4 py-3 text-xs text-center text-gray-500 uppercase tracking-wider">&nbsp;</th>
           </tr>
         </thead>
@@ -32,6 +33,7 @@
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ d.id }}</td>
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ d.detectionTimestamp | date:'MMMM d, yyyy - HH:mm' }}</td>
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ d.direction }}</td>
+            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-900">{{ d.hornet?.color?.colorName || "Unkown"}}</td>
             <td class="whitespace-nowrap text-sm font-medium">
               <div class="flex justify-end gap-2">
                 <a (click)="delete(d.id)" class="text-red-600 hover:text-red-800 cursor-pointer">

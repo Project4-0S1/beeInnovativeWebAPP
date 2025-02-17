@@ -1,4 +1,5 @@
 import { Beehive } from "./beehive";
+import { Hornet } from "./hornet";
 import { UserBeehive } from "./user-beehive";
 
 export interface HornetDetection {
@@ -9,4 +10,5 @@ export interface HornetDetection {
     hornetId: number;
     beehiveId: number;
     beehive?: Beehive; // Optional field for cases where it's null or unknown
+    hornet?: Hornet
   }
